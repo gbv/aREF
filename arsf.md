@@ -4,14 +4,39 @@ ARSF is defined on top of array-map-structures like known from JSON, YAML, and p
 
 ARSF is similar to [JSON-LD](http://json-ld.org/) and RDF/Turtle but better aligned with YAML.
 
+
+## Specification
+
+```
+Graph       = { ( Subject : PropertyMap )* Namespaces? } 
+            | { ( "_id" : Subject ) ( Predicate : Objects )* Namespaces? }
+PropertyMap = { ( Predicate : Objects )* }
+
+Subject     = URIRef
+Predicate   = URIRef | "a"
+Objects     = Object | [ Object* ]
+
+Object      = URIRef | SimpleString | StringWithDatatype | StringWithLanguage
+            | { ( "_id" : URIRef ) ( Predicate : Objects )* }
+            | { ( Predicate : Objects )* }
+            | { ( "_value" : String ) }
+            | { ( "_value" : String ) ( "_type" : URIRef ) }
+            | { ( "_value" : String ) ( "_lang" : Language ) }
+
+URIref      = FullURI | PrefixedURI | BlankNodeIdentifier
+Namespaces  = ( "_ns" : { ( Prefix : FullURI )* } )
+
+```
+
 # Summary
 
-## Four keywords:
+## keywords:
 
 * `_id`
 * `_value`
 * `_type`
 * `_lang`
+* `a`
 * `_ns`
 
 ## Predicate-Map
@@ -74,16 +99,16 @@ Taken and adopted from the JSON-LD specification:
   "schema:image": "http://manu.sporny.org/images/manu.png"
 }
 
-# explicit _id/@id (the former better to use in YAML):
+# explicit _id
 {
   "schema:name": "Manu Sporny",
-  "schema:url": { "@id": "http://manu.sporny.org/" },
+  "schema:url": { "_id": "http://manu.sporny.org/" },
   "schema:image": { "_id:": "http://manu.sporny.org/images/manu.png" }
 }
 
 # subject URI and shortcut for rdf:type
 {
-  "@id": "http://me.markus-lanthaler.com/",
+  "_id": "http://me.markus-lanthaler.com/",
   "schema:name": "Markus Lanthaler",
   "a": "foaf:Person"
 }
@@ -91,15 +116,15 @@ Taken and adopted from the JSON-LD specification:
 # Datatypes like in JSON-LD
 {
   "dct:modified": {
-    "@value": "2010-05-29T14:17:39+02:00",
-    "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+    "_value": "2010-05-29T14:17:39+02:00",
+    "_type": "http://www.w3.org/2001/XMLSchema#dateTime"
   }
 }
 # Datatypes abbreviated
 {
   "dct:modified": {
-    "@value": "2010-05-29T14:17:39+02:00",
-    "@type": "xsd:dateTime"
+    "_value": "2010-05-29T14:17:39+02:00",
+    "_type": "xsd:dateTime"
   }
 }
 { "dct:modified": "2010-05-29T14:17:39+02:00^^xsd:dateTime" }
@@ -111,7 +136,7 @@ Taken and adopted from the JSON-LD specification:
 # To avoid interpreting language tags (same with datatypes):
 {
    "foo:bar": {
-     "@value": "Ninja@en" # full literal
+     "_value": "Ninja@en" # full literal
    }
 }
 
