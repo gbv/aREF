@@ -1,0 +1,72 @@
+# Another RDF Serialization Form (ARSF)
+
+ARSF is defined on top of array-map-structures like known from JSON, YAML, and programming languages such as Perl. In short, an array-map-structure can be expressed in JSON without special treatment of numbers, true, false, and null.
+
+ARSF is similar to [JSON-LD](http://json-ld.org/) and RDF/Turtle but better aligned with YAML.
+
+# Synopsis
+
+## Four keywords:
+
+* `_id`
+* `_value`
+* `_type`
+* `_ns`
+
+# Examples
+
+Taken and adopted from the JSON-LD specification:
+
+```
+{
+  "schema:name": "Manu Sporny",
+  "schema:url": "http://manu.sporny.org/",
+  "schema:image": "http://manu.sporny.org/images/manu.png"
+}
+
+# explicit _id/@id (the former better to use in YAML):
+{
+  "schema:name": "Manu Sporny",
+  "schema:url": { "@id": "http://manu.sporny.org/" },
+  "schema:image": { "_id:": "http://manu.sporny.org/images/manu.png" }
+}
+
+# subject URI and shortcut for rdf:type
+{
+  "@id": "http://me.markus-lanthaler.com/",
+  "schema:name": "Markus Lanthaler",
+  "a": "foaf:Person"
+}
+
+# Datatypes like in JSON-LD
+{
+  "dct:modified": {
+    "@value": "2010-05-29T14:17:39+02:00",
+    "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+  }
+}
+# Datatypes abbreviated
+{
+  "dct:modified": {
+    "@value": "2010-05-29T14:17:39+02:00",
+    "@type": "xsd:dateTime"
+  }
+}
+{ "dct:modified": "2010-05-29T14:17:39+02:00^^xsd:dateTime" }
+{ "dct:modified": "2010-05-29T14:17:39+02:00^^http://www.w3.org/2001/XMLSchema#dateTime" }
+
+# Language tags:
+"Ninja@en", "忍者@ja"
+
+# To avoid interpreting language tags (same with datatypes):
+{
+   "foo:bar": {
+     "@value": "Ninja@en" # full literal
+   }
+}
+
+prefixes:
+
+_ns:
+  xsd: http://www.w3.org/2001/XMLSchema#
+```
