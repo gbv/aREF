@@ -4,14 +4,64 @@ ARSF is defined on top of array-map-structures like known from JSON, YAML, and p
 
 ARSF is similar to [JSON-LD](http://json-ld.org/) and RDF/Turtle but better aligned with YAML.
 
-# Synopsis
+# Summary
 
 ## Four keywords:
 
 * `_id`
 * `_value`
 * `_type`
+* `_lang`
 * `_ns`
+
+## Predicate-Map
+
+```
+{
+   $p1 : $objects1,
+   $p2 : $objects2,
+   ...
+}
+```
+
+## Same-Subject-Graphs
+
+
+```
+{
+   _id : $subject,
+   $p1 : $objects1,
+   $p2 : $objects2,
+   ...
+}
+```
+
+## Graphs
+
+```
+{
+   $s1 : $PredicateMap1,
+   $s1 : $PredicateMap2,
+   ...
+}
+```
+
+Plus optional keyword `_ns` (prefixes).
+
+## URI references
+
+a) full URI (string)
+b) with namespace prefix (string)
+c) blank node identifier (string) (`_:xxx`)
+c) map 
+    a) with `_id`
+    b) with `_value` (and possible `_lang` or `_type`)
+    c) anonymous blank node (=PredicateMap)
+
+## Objects
+
+a) a single objects (string or map)
+b) a list of objects (array)
 
 # Examples
 
