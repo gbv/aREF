@@ -1,11 +1,8 @@
-# Another RDF Serialization Form (ARSF)
-
 ARSF is defined on top of array-map-structures like known from JSON, YAML, and programming languages such as Perl. In short, an array-map-structure can be expressed in JSON without special treatment of numbers, true, false, and null.
 
 ARSF is similar to [JSON-LD](http://json-ld.org/) and RDF/Turtle but better aligned with YAML.
 
-
-## Specification
+# Specification
 
 ```
 Graph       = { ( Subject : PropertyMap )* Namespaces? } 
@@ -25,8 +22,48 @@ Object      = URIRef | SimpleString | StringWithDatatype | StringWithLanguage
 
 URIref      = FullURI | PrefixedURI | BlankNodeIdentifier
 Namespaces  = ( "_ns" : { ( Prefix : FullURI )* } )
-
 ```
+
+## URI References
+
+...
+
+## Literals
+
+### Plain literals
+
+...
+
+### Language tag literals
+
+...
+
+### Datatype literals
+
+...
+
+## Blank nodes
+
+...
+
+## Statements
+
+
+## Graphs
+
+Like turtle
+
+
+    { 
+        $subject1 : {
+            $predicate1 : $objects,
+        },
+        $subject2 : {
+            $p1 :
+            $p2 :
+        }
+    }
+
 
 # Summary
 
@@ -98,50 +135,58 @@ Taken and adopted from the JSON-LD specification:
   "schema:url": "http://manu.sporny.org/",
   "schema:image": "http://manu.sporny.org/images/manu.png"
 }
-
-# explicit _id
-{
-  "schema:name": "Manu Sporny",
-  "schema:url": { "_id": "http://manu.sporny.org/" },
-  "schema:image": { "_id:": "http://manu.sporny.org/images/manu.png" }
-}
-
-# subject URI and shortcut for rdf:type
-{
-  "_id": "http://me.markus-lanthaler.com/",
-  "schema:name": "Markus Lanthaler",
-  "a": "foaf:Person"
-}
-
-# Datatypes like in JSON-LD
-{
-  "dct:modified": {
-    "_value": "2010-05-29T14:17:39+02:00",
-    "_type": "http://www.w3.org/2001/XMLSchema#dateTime"
-  }
-}
-# Datatypes abbreviated
-{
-  "dct:modified": {
-    "_value": "2010-05-29T14:17:39+02:00",
-    "_type": "xsd:dateTime"
-  }
-}
-{ "dct:modified": "2010-05-29T14:17:39+02:00^^xsd:dateTime" }
-{ "dct:modified": "2010-05-29T14:17:39+02:00^^http://www.w3.org/2001/XMLSchema#dateTime" }
-
-# Language tags:
-"Ninja@en", "忍者@ja"
-
-# To avoid interpreting language tags (same with datatypes):
-{
-   "foo:bar": {
-     "_value": "Ninja@en" # full literal
-   }
-}
-
-prefixes:
-
-_ns:
-  xsd: http://www.w3.org/2001/XMLSchema#
 ```
+
+## explicit _id
+
+    {
+      "schema:name": "Manu Sporny",
+      "schema:url": { "_id": "http://manu.sporny.org/" },
+      "schema:image": { "_id:": "http://manu.sporny.org/images/manu.png" }
+    }
+
+## subject URI and shortcut for rdf:type
+
+    {
+      "_id": "http://me.markus-lanthaler.com/",
+      "schema:name": "Markus Lanthaler",
+      "a": "foaf:Person"
+    }
+
+## Datatypes like in JSON-LD
+
+    {
+      "dct:modified": {
+        "_value": "2010-05-29T14:17:39+02:00",
+        "_type": "http://www.w3.org/2001/XMLSchema#dateTime"
+      }
+    }
+
+## Datatypes abbreviated
+
+    {
+      "dct:modified": {
+        "_value": "2010-05-29T14:17:39+02:00",
+        "_type": "xsd:dateTime"
+      }
+    }
+    { "dct:modified": "2010-05-29T14:17:39+02:00^^xsd:dateTime" }
+    { "dct:modified": "2010-05-29T14:17:39+02:00^^http://www.w3.org/2001/XMLSchema#dateTime" }
+
+## Language tags:
+
+    "Ninja@en", "忍者@ja"
+
+To avoid interpreting language tags (same with datatypes):
+
+    {
+       "foo:bar": {
+         "_value": "Ninja@en" # full literal
+       }
+    }
+
+## Namespace prefixes
+
+    _ns:
+      xsd: http://www.w3.org/2001/XMLSchema#
+
