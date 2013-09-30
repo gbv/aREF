@@ -24,7 +24,55 @@ URIref      = FullURI | PrefixedURI | BlankNodeIdentifier
 Namespaces  = ( "_ns" : { ( Prefix : FullURI )* } )
 ```
 
+## List-Map-Structures
+
+A List-Map-Structure (LMS) is a data structure that consists of **LMS values**.
+Each LMS value is either
+
+* a Unicode string,
+* a **LMS lists**, which is a sequence of zero or more LMS values, or
+* a **LMS map**, which is a a (possibly empty) set of Unicode strings and a
+  bijective mapping from these strings to LMS values.
+
+Each **LMS instance** is a LMS value that is not a Unicode string (so it's
+either a LMS list or a LMS map). 
+
+*Note that this definition does not exclude recursive structures.*
+
+In the following the terms "list" and "map" refer to LMS lists or LMS maps,
+respectively, unless noted otherwise.
+
 ## URI References
+
+An URI reference is represented as Unicode string. The string can either be 
+an abbreviated URI reference or an absolute URI reference
+
+## Abbreviated URI references
+
+An abbreviated URI reference consists of a **prefix** and a **suffix**
+separated by a colon (`:`). The prefix is a Unicode string starting with
+a lowercase letter (`a-z`) optionally followed by a sequence of lowercase
+letters and digits (`0-9`). A suffix is a Unicode string that is either empty
+or conforms to the `name` rule from Turtle syntax specification:
+
+    name          ::= nameStartChar nameChar*
+
+    nameStartChar ::= [A-Z] | "_" | [a-z] | [#x00C0-#x00D6] | [#x00D8-#x00F6] |
+                      [#x00F8-#x02FF] | [#x0370-#x037D] | [#x037F-#x1FFF] | 
+                      [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | 
+                      [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] |
+                      [#x10000-#xEFFFF]
+
+    nameChar      ::= nameStartChar | '-' | [0-9] | #x00B7 | 
+                      [#x0300-#x036F] | [#x203F-#x2040]
+
+*Note that this definition of prefixes is more restrictive than the definition
+of prefixes in Turtle and JSON-LD. The restriction of suffixes allows for
+absolute URI references such as `geo:48.2010,16.3695,183` [RFC5870] and
+`tag:yaml.org,2002:int` [RFC4151] while still using these URI scheme names as
+URI prefixes (e.g. `geo:Point` and `tag:Tag`).*
+
+## Absolute URI references
 
 ...
 
@@ -189,4 +237,20 @@ To avoid interpreting language tags (same with datatypes):
 
     _ns:
       xsd: http://www.w3.org/2001/XMLSchema#
+
+# References
+
+* Graham Klyne; Jeremy J. Carroll:
+  *Resource Description Framework (RDF): Concepts and Abstract Syntax.*
+  10 February 2004. W3C Recommendation.
+  <http://www.w3.org/TR/2004/REC-rdf-concepts-20040210>
+
+* *Turtle. Terse RDF Triple Language*.
+  W3C Candidate Recommendation 19 February 2013.
+  <http://www.w3.org/TR/turtle/>
+
+* Uniform Resource Identifier (URI) Schemes.
+  <http://www.iana.org/assignments/uri-schemes/>
+
+* <http://json-ld.org/spec/latest/>
 
