@@ -1,12 +1,12 @@
 # Introduction
 
 This document defines an encoding of RDF graphs called **Another RDF
-Serialization Form (ARSF)**. The encoding can be used as readable
+Encoding Form (AREF)**. The encoding can be used as readable
 representation of RDF data in serialization formats and data binding languages.
 
 ## Related RDF serializations
 
-ARSF is similar to [JSON-LD](http://json-ld.org/) and RDF/Turtle but better
+AREF is similar to [JSON-LD](http://json-ld.org/) and RDF/Turtle but better
 aligned with YAML.
 
 This document uses Turtle syntax to express RDF data.
@@ -17,7 +17,7 @@ This document uses Turtle syntax to express RDF data.
 
 RDF is a graph-based data structuring languages defined as abstract syntax by
 Klyne and Carroll (2004). Several RDF variants exist. RDF data as encoded by
-ARSF documents can be defined as following:
+AREF documents can be defined as following:
 
 * An ***RDF graph*** (also known as to as *RDF data*) is a set of *triples*.
 * A ***triple*** (also known as *statement*) consists of a *subject*, 
@@ -37,7 +37,7 @@ ARSF documents can be defined as following:
 `[a-zA-Z]{1,8}(’-’[a-zA-Z0-9]{1,8})`. Case can be ignored.*
 
 *NOTE: a **blank node identifier** MAY be used to refer to a particular
-blank note within the scope of an ARSF document. Blank node identifiers
+blank note within the scope of an AREF document. Blank node identifiers
 are not part of RDF data.*
 
 ## List-map-structures
@@ -118,7 +118,7 @@ Literals are encoded as Unicode strings.
 ### Plain literals
 
 A trailing `@` is removed. If a literal may be confused with an IRI, its
-representation in ARSF contains an additional `@` at the end.
+representation in AREF contains an additional `@` at the end.
 
 ...
 
@@ -189,7 +189,7 @@ Same-Subject-Graph:
 ```
 
 
-*NOTE: There can only be one namespaceMap in an ARSF document.*
+*NOTE: There can only be one namespaceMap in an AREF document.*
 
 ### Property maps
 
