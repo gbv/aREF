@@ -3,8 +3,8 @@
 This document defines an encoding of RDF graphs called **another RDF encoding
 form (aREF)**. The encoding combines the best parts of existing RDF
 serializations [Turtle], [JSON-LD], and [RDF/JSON]. In contrast to these
-formats, RDF data in aREF is not serialized in form of Unicode strings but
-encoded in form of [list-map-structures]. Thus, aREF allows to express RDF
+formats, RDF data in aREF is not serialized in form of a Unicode string but
+encoded in form of a [*list-map-structure*]. Thus, aREF allows to express RDF
 graphs in different data structuring languages and type systems of programming
 languages.
 
@@ -32,7 +32,7 @@ W3C](http://www.w3.org/TR/REC-xml/#sec-notation). The term **string** in this
 document always refers to Unicode strings as defined by [Unicode]. A *string*
 can also be defined with the following syntax rule:
 
-    string ::= [#x0-#x10FFFF]*
+    string          ::= [#x0-#x10FFFF]*
 
 Strings SHOULD be ine in Normal Form C ([NFC]). Applications MAY restrict
 strings by disallowing selected Unciode codepoints, such as the 66 Unicode
@@ -65,12 +65,12 @@ variants exist. RDF data as encoded by aREF is defined as following:
 
 This definition neither includes relative IRIs nor blank node identifiers as
 known from some RDF serialization forms. To refer to a particular blank node
-within the scope of the same RDF graph, aREF supports [identified blank
-nodes](#identified-blank-nodes).
+within the scope of the same RDF graph in aREF one can use [*identified blank
+node*].
 
 ## Lists-map-structures
 
-[list-map-structures]: #lists-map-structures
+[*list-map-structure*]: #lists-map-structures
 
 A **list-map-structure** is an abstract data structure build of
 
@@ -84,46 +84,46 @@ documents to non-recursive *list-map-structures*.
 
 # Encoding
 
-An *RDF graph* in aREF is encoded in form of a *list-map-structure* as
+An *RDF graph* in aREF is encoded in form of a [*list-map-structure*] as
 following.
 
 ## IRIs
 
-[encoded IRI]: #iris
-
-An *IRI* in aREF is encoded as string, either in form of *absolute IRIs* or as
-*prefixed names*.
+An *IRI* in aREF is encoded as string, either in form of an [*absolute
+IRI*](#absolute-iris) or as [*prefixed name*](#prefixed-names).
 
 ### Absolute IRIs
 
-An **absolute IRI** is either an IRI enclosed in angle brackets (`<` and `>`),
-or an IRI that also matches the grammar rule `plainIRI` but not any of the the
-grammar rules `explicitString`, `languageTaggedString` and `datatypedString`. .
+[*absolute IRI*]: #absolute-iris
 
-      absoluteIRI   ::= "<" IRI ">" | plainIRI /* IRI syntax rule from RFC 3987 */
+An **absolute IRI** is either an IRI enclosed in angle brackets (`<` and `>`),
+or an IRI that also matches the syntax rule `plainIRI` but not the syntax rule
+`literalNode`.
+
+      absoluteIRI   ::= "<" IRI ">" | plainIRI
+                        /* IRI syntax rule from RFC 3987 */
 
       plainIRI      ::= [a-z] ( [a-z] | [0-9] | "+" | "." | "-" )* ":" string?
-                        /* note additional constraints! */
+                        /* MUST also match IRI syntax rule from RFC 3987 */
+                        /* MUST NOT match syntax rule literalNode */
 
-      
 ### Prefixed names
 
-A **prefixed name** consists of a **prefix** and a **name** separated by a
-colon (`:`). The prefix is a string starting with a lowercase letter
-(`a-z`) optionally followed by a sequence of lowercase letters and digits
-(`0-9`).
+[*prefixed name*]: #prefixed-names
 
-      prefixedName  ::= prefix ":" name
+A **prefixed name** consists of a **prefix** and a **name** separated by a
+colon (`:`) or by an underscore (`_`): 
+
+      prefixedName  ::= prefix ( ":" | "_" ) name
+
+The prefix is a string starting with a
+lowercase letter (`a-z`) optionally followed by a sequence of lowercase letters
+and digits (`0-9`).
+
 
       prefix        ::= [a-z] ( [a-z] | [0-9] )*
 
-As key in a [predicate map](#predicate-maps) a prefixed name MAY also
-use an underscore (“`_`”) instead of a colon.
-
-      uPrefixedName ::= prefix "_" name
-
-A name is a string that is either empty or conforms to the
-following syntax:
+A name is a string that is either empty or conforms to the following syntax:
 
       name          ::= nameStartChar nameChar*
 
@@ -136,61 +136,65 @@ following syntax:
       nameChar      ::= nameStartChar | '-' | [0-9] | #x00B7 | 
                         [#x0300-#x036F] | [#x203F-#x2040]
 
-This definition of prefixes is more restrictive than the
-definition of prefixes in Turtle and JSON-LD. The restriction of
-suffixes allows for absolute URI references such as
-`geo:48.2010,16.3695,183` [RFC 5870] and `tag:yaml.org,2002:int`
-[RFC 4151] while still using these URI scheme names as URI prefixes (e.g.
-`geo:Point` and `tag:Tag`).
+This definition is more restrictive than corresponding definitions in Turtle
+and JSON-LD. The restriction allows for both, URI scheme names as URI prefixes
+(e.g. "`geo:Point`" and "`tag:Tag`") and absolute URI references such as
+"`geo:48.2010,16.3695,183`" ([RFC 5870]) and "`tag:yaml.org,2002:int`" ([RFC 4151]).
 
 ## Literal nodes
 
-Literal nodes are encoded as strings conforming to the following rules:
+A literal node in aREF is encoded as string in one of three forms:
 
-      literalNode          ::= explicitString | languageTaggedString | datatypedString | string
+      literalNode   ::= plainLiteral | languageString | datatypeString
 
-      explicitString       ::= string "@"
+### Simple literals
 
-      languageTaggedString ::= string "@" languageTag
+A *simple literal* with datatype `http://www.w3.org/2001/XMLSchema#string` MAY
+be encoded as literal node with datatype or by appending an at sign (`@`) to
+the simple literal’s string. If the simple literal’s string neither ends with
+an at sign (`@`) nor matches to any of the syntax rules of [*absolute IRI*]
+(`absoluteIRI` or `plainIRI`), [*prefixed name*] (`prefixedName`) and
+[*identified blank node*] (`blankNode`), the string SHOULD be used as given. 
 
-      languageTag ::= [a-z]{2,8} ( "-" [a-z0-9]{1,8} )*
+      plainLiteral   ::= string "@"
+                         string
+                         /* MUST NOT end with "@" */
+                         /* MUST NOT match syntax rule 
+                            absoluteIRI, plainIRI, prefixedName, or blankNode */
+
+### Literal nodes with language tag
+
+Literal nodes with *language tag* are encoded by appending an at sign (`@`)
+followed by the language tag to the literal node’s string:
+
+      languageString ::= string "@" languageTag
+
+      languageTag    ::= [a-z]{2,8} ( "-" [a-z0-9]{1,8} )*
 
 Note that the syntax rule of a language tag in aREF is slightly more
 restrictive than the syntax of a language tag in [Turtle] but less restrictive
 than the syntax of a language tag in JSON-LD, which refers to well-formed
 language tags as defined in [BCP 47].
 
-### Literal nodes with language tag
-
-Literal nodes with language tag are encoded by appending the character
-“`@`” and the language tag to the literal node’s string.
-
-### Simple literals
-
-A simple literal is encoded by optionally appending the character `@` to the
-literal node’s string. The character “`@`” MUST be appended if the literal
-node’s string matches the IRI syntax as defined in [RFC 3987] or the syntax of
-an [identified blank node](#identified-blank-nodes). Simple literals MAY also
-but SHOULD NOT be encoded as literal nodes with datatype IRI
-`http://www.w3.org/2001/XMLSchema#string`.
-
 ### Literal nodes with datatype
 
-A literal node with datatype is encoded by appending one or two
-characters “`^`” and the datatype’s IRI either enclosed in “`<`” and
-“`>`” or as prefixed name.
+A literal node with *datatype* is encoded by appending one or two carets (`^`)
+followed by the datatype’s IRI either enclosed in “`<`” and “`>`” or as
+[*prefixed name*]:
 
-      datatypedString      ::= string "^" "^"? ( prefixedName | "<" IRI ">" )
+      datatypeString ::= string "^" "^"? ( prefixedName | "<" IRI ">" )
 
-Note that for some reason [Turtle] uses the character sequence “`^^`” instead
-of a single “`^`” to serialize literal nodes with datatype.
+Note that [Turtle] only supports the character sequence “`^^`” instead of a
+single “`^`” to serialize literal nodes with datatype.
 
 ## Blank nodes
 
-Blank nodes can be encoded as *identified blank nodes* or as *anonymous blank
-nodes*.
+A *blank nodes* in aRef is encoded as [*identified blank nodes*] or as
+[*anonymous blank node*].
 
 ### Identified blank nodes
+
+[*identified blank node*]: #identified-blank-nodes
 
 An **identified blank node** is a *blank node* that is given a **blank node
 identifier** for referencing within the same *RDF graph*. Note that *blank node
@@ -200,22 +204,30 @@ simple way to reference a particular *blank node* from an external document. An
 followed by the *blank node identifier*. The set of *blank node identifiers* is
 limited to sequences of letters `a` to `z`, `A` to `Z`, and digits `0` to `9`.
 
-      blankNodeIdentifier ::= "_:" ( [a-z] | [A-Z] | [0-9] )+
+      blankNode      ::= "_:" ( [a-z] | [A-Z] | [0-9] )+
 
 Note that this rule is more restrictive than the rule of blank node
 identifiers in [Turtle] and in [JSON-LD].
 
+<!--
+TODO: clean up rest of the document.
+
+Applications MAY put the blank node identifier as value of key `_id` in a *map*.
+-->
+
 ### Anonymous blank nodes
 
-An **anonymous blank node** in aREF is encoded by a [predicate
-map](#predicate-maps) that does not include the key “`_id`”. In the simplest
-case the *blank node* is encoded by an empty *map*.
+[*anonymous blank node*]: #anonymous-blank-nodes
+
+An **anonymous blank node** in aREF is encoded by a [*predicate map*] that does
+not include the key “`_id`”. In the simplest case the *blank node* is encoded
+by an empty *map*.
 
 ## Graphs
 
 An *RDF graph* is encoded as *map*. Two kinds of maps can be distinguished: a
 *[subject map](#subject-maps)* contains zero or more *subjects* as *keys*,
-similar to an *RDF graph* encoded in [RDF/JSON]. A [predicate map](#predicate-maps)
+similar to an *RDF graph* encoded in [RDF/JSON]. A [*predicate map*]
 has a common *subject* and a set of one ore more *predicates* as *keys*. Both
 kinds of *maps* can additionally contain a [namespace map](#namespace-maps). An
 *RDF graph* encoded as *predicate map* MUST contain the special *key* “`_id`”.
@@ -231,10 +243,12 @@ A **subject map** is a *map* where
 
 ### Predicate maps
 
+[*predicate map*]: #predicate-maps
+
 A **predicate map** is a *map* where every *key*, except the optional *keys*
 “`_ns`” and “`_id`”, is
 
--   either an [encoded IRI](#iris) (as absolute IRI or as prefixed name,
+-   either an IRI (as [*absolute IRI*] or as [*prefixed name*],
     also possible with underscore alternative to colon),
 -   or the string “`a`” as alias for the IRI
     “`http://www.w3.org/1999/02/22-rdf-syntax-ns#type`”
@@ -248,7 +262,7 @@ An **encoded object** in aREF represents one or multiple *objects* of RDF
 *triples* with same *subject* and same *predicate*. An encoded object can be
 any of:
 
--   an [encoded IRI](#iris),
+-   a IRI, encoded as [*absolute IRI*] or as [*prefixed name*],
 -   a [literal node](#literal-nodes), encoded as string,
 -   a [blank node](#blank-nodes), encoded as string,
 -   a non-empty *list* of strings, each encoding an RDF *object*.
