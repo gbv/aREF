@@ -1,5 +1,8 @@
 # Examples
 
+An aREF document can be expressed both in data structuring languages (JSON,
+YAML...) and in type systems of programming languages (Python, Ruby, Perl...).
+
 Example 1/2 from JSON-LD adopted as aRef in JSON or Python:
 
     {
