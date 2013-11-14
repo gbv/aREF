@@ -1,12 +1,12 @@
 # Introduction
 
-This document defines an encoding of RDF graphs called **another RDF encoding
-form (aREF)**. The encoding combines the best parts of existing RDF
-serializations [Turtle], [JSON-LD], and [RDF/JSON]. In contrast to these
-formats, RDF data in aREF is not serialized in form of a Unicode string but
-encoded in form of a [*list-map-structure*]. Thus, aREF allows to express RDF
-graphs in different data structuring languages and type systems of programming
-languages.
+This document defines an encoding of [*RDF graphs*] called **another RDF
+encoding form (aREF)**. The encoding combines and simplfies best parts of
+existing RDF serializations [Turtle], [JSON-LD], and [RDF/JSON]. In contrast to
+these formats, RDF data in aREF is not serialized in form of a Unicode string
+but encoded in form of a [*list-map-structure*]. Thus, aREF allows to express
+RDF graphs in different data structuring languages and type systems of
+programming languages.
 
 ## Status of this document
 
@@ -34,13 +34,15 @@ can also be defined with the following syntax rule:
 
     string          ::= [#x0-#x10FFFF]*
 
-Strings SHOULD be ine in Normal Form C ([NFC]). Applications MAY restrict
-strings by disallowing selected Unciode codepoints, such as the 66 Unicode
+Strings SHOULD be in Normal Form C ([NFC]). Applications MAY restrict strings
+by disallowing selected Unciode codepoints, such as the 66 Unicode
 noncharacters or the set of Unicode characters not expressible in XML.
 
 [NFC]: http://www.unicode.org/unicode/reports/tr15/
 
 ## RDF data
+
+[*RDF graphs*]: #rdf-data
 
 RDF is a graph-based data structuring languages defined as abstract syntax by
 Klyne and Carroll ([2004](http://www.w3.org/TR/rdf-concepts/)). Several RDF
@@ -63,10 +65,10 @@ variants exist. RDF data as encoded by aREF is defined as following:
 * A **language tag** is a well-formed laguage tag as defined in [BCP 47].
 * A **blank node** is neither an *IRI* nor a *literal node*.
 
-This definition neither includes relative IRIs nor blank node identifiers as
-known from some RDF serialization forms. To refer to a particular blank node
-within the scope of the same RDF graph in aREF one can use [*identified blank
-node*].
+This definition of RDF data neither includes relative IRIs nor blank node
+identifiers. When an *RDF graph* is encoded in aREF one can use [*blank node
+identifiers*](#blank-nodes) to refer to particular blank nodes within the scope
+of the same *RDF graph*.
 
 ## Lists-map-structures
 
@@ -76,16 +78,13 @@ A **list-map-structure** is an abstract data structure build of
 
 * *strings*, which are Unicode strings,
 * **lists**, which are a sequences of zero or more *list-map-structures*,
-* and **maps**, which are sets of *strings* (the maps' *keys*)
-  and a mapping from these keys *list-map-structures*.
+* and **maps**, which are sets of *strings* (the maps' **keys**)
+  and a mapping from these *keys* to *list-map-structures*.
 
 Every aREF document MUST be given as *map*. Applications MAY restrict aREF
 documents to non-recursive *list-map-structures*.
 
 # Encoding
-
-An *RDF graph* in aREF is encoded in form of a [*list-map-structure*] as
-following.
 
 ## IRIs
 
@@ -189,61 +188,55 @@ single “`^`” to serialize literal nodes with datatype.
 
 ## Blank nodes
 
-A *blank nodes* in aRef is encoded as [*identified blank nodes*] or as
-[*anonymous blank node*].
+A *blank nodes* in aREF is encoded as string in form of a *blank node
+identifier* or by using a [*predicate map*] that either does not contain the
+special key "`_id`" or contains the special key "`_id`" mapped to a *blank node
+identifier*.
 
-### Identified blank nodes
-
-[*identified blank node*]: #identified-blank-nodes
-
-An **identified blank node** is a *blank node* that is given a **blank node
-identifier** for referencing within the same *RDF graph*. Note that *blank node
-identifiers* are always disjoint between different *RDF graphs*, so there is no
-simple way to reference a particular *blank node* from an external document. An
-*identified blank node* in aREF is encoded as a string that starts with “`_:`”
-followed by the *blank node identifier*. The set of *blank node identifiers* is
-limited to sequences of letters `a` to `z`, `A` to `Z`, and digits `0` to `9`.
+A **blank node identifier** is a string conforming to the following syntax
+rule. Note that the syntax rule `blankNode` is more
+restrictive than the rule of blank node identifiers in [Turtle] and in
+[JSON-LD]:
 
       blankNode      ::= "_:" ( [a-z] | [A-Z] | [0-9] )+
 
-Note that this rule is more restrictive than the rule of blank node
-identifiers in [Turtle] and in [JSON-LD].
-
-<!--
-TODO: clean up rest of the document.
-
-Applications MAY put the blank node identifier as value of key `_id` in a *map*.
--->
-
-### Anonymous blank nodes
-
-[*anonymous blank node*]: #anonymous-blank-nodes
-
-An **anonymous blank node** in aREF is encoded by a [*predicate map*] that does
-not include the key “`_id`”. In the simplest case the *blank node* is encoded
-by an empty *map*.
+Within the scope of the same *RDF graph*, equal *blank node identifiers* MUST
+refer to the same *blank node*. *Blank node identifiers* MUST NOT be shared
+among different *RDF graphs*. It is RECOMMENDED to avoid *blank node
+identifiers* in an aREF document if the *blank node* encoded by a *blank node
+identifier* is never referenced in the same RDF graph. In the simplest case, a
+*blank node* in aREF can be encoded as an empty *map*.
 
 ## Graphs
 
-An *RDF graph* is encoded as *map*. Two kinds of maps can be distinguished: a
-*[subject map](#subject-maps)* contains zero or more *subjects* as *keys*,
-similar to an *RDF graph* encoded in [RDF/JSON]. A [*predicate map*]
-has a common *subject* and a set of one ore more *predicates* as *keys*. Both
-kinds of *maps* can additionally contain a [namespace map](#namespace-maps). An
-*RDF graph* encoded as *predicate map* MUST contain the special *key* “`_id`”.
+An *RDF graph* in aREF is encoded as a [*list-map-structure*] that is: 
+
+* either a [*predicate map*] that MUST contain the special *key* "`_id`",
+* or a [*subject map*].
+
+Both kinds of *maps* can additionally contain a [*namespace map*].
 
 ### Subject maps
 
+[*subject map*]: #subject-maps
+
+A *subject map* contains zero or more *subjects* as *keys*,
+similar to an *RDF graph* encoded in [RDF/JSON].
+
 A **subject map** is a *map* where
 
--   every key, expect the optional key “`_ns`”, is an [encoded
-    IRI](#iris),
--   and every value is a *predicate map* that does not contain the special
-    *keys* “`_ns`” and “`_id`”.
+-   every key, expect the optional key “`_ns`”, is an [encoded IRI](#iris),
+-   and every value is a non-empty [*predicate map*] that MUST NOT
+    contain the special *keys* “`_ns`” and `_id`”.
 
 ### Predicate maps
 
 [*predicate map*]: #predicate-maps
+
+A *predicate map* has a common *subject* (that can also be given implicitly)
+and a set of one ore more *predicates* as *keys*.  A *predicate map* is called
+**empty** if if does not contain any keys, not counting the special keys
+"`_ns`" and "`_id`". 
 
 A **predicate map** is a *map* where every *key*, except the optional *keys*
 “`_ns`” and “`_id`”, is
@@ -254,7 +247,8 @@ A **predicate map** is a *map* where every *key*, except the optional *keys*
     “`http://www.w3.org/1999/02/22-rdf-syntax-ns#type`”
 
 and every value of these *keys* is an [encoded object](#encoded-objects).
-A *predicate map* MUST NOT be empty, not counting the optional *keys*.
+
+<!-- TODO: clean up rest of the document. -->
 
 ### Encoded objects
 
@@ -276,6 +270,8 @@ one string. The former form is RECOMMENDED but the latter form is possible as
 well, as known from [RDF/JSON].
 
 ### Namespace maps
+
+[*namespace map*]: #namespace-maps
 
     this section is not finished yet.
 
