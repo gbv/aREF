@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="de_DE:de:en_GB:en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="Jakob Voß (voss@gbv.de)" />
+  <meta name="date" content="2013-11-14" />
+  <title>Another RDF Encoding Form (aREF)</title>
+   <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <style type="text/css">
+  body { font-family: sans-serif; }
+  a { text-decoration: none }
+  a:hover { text-decoration: underline }
+  h1 { font: 170% sans-serif }
+  h1.title { font-size: 200%; font-weight: bold; }
+  h2 { font: 140% sans-serif }
+  h3 { font: 120% sans-serif }
+  dt { font-weight: bold; }
+  h1, h2, h3, h1 a, h2 a, h3 a { color: #005A9C; }
+  table { border-collapse: collapse; }
+  td { border: 1px solid #999; padding: 3px }
+  dl p { margin-top: 0; }
+  dt { margin-top: 0.8em; }
+  dd { margin-left: 1.5em; }
+  ol { margin-bottom: 1em; }
+  table + p { margin-top: 1em; }
+  </style>
+</head>
+<body>
+<a href="https://github.com/gbv/aREF/"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
+<header>
+<h1 class="title">Another RDF Encoding Form (aREF)</h1>
+<h3 class="author">Jakob Voß (voss@gbv.de)</h3>
+<h4 class="date">2013-11-14 (version 0.03)</h4>
+</header>
+
+<h1>Table of Contents</h1>
+<nav id="TOC">
+<ul>
+<li><a href="#introduction"><span class="toc-section-number">1</span> Introduction</a><ul>
+<li><a href="#status-of-this-document"><span class="toc-section-number">1.1</span> Status of this document</a></li>
+<li><a href="#terminology"><span class="toc-section-number">1.2</span> Terminology</a></li>
+<li><a href="#rdf-data"><span class="toc-section-number">1.3</span> RDF data</a></li>
+<li><a href="#lists-map-structures"><span class="toc-section-number">1.4</span> Lists-map-structures</a></li>
+</ul></li>
+<li><a href="#encoding"><span class="toc-section-number">2</span> Encoding</a><ul>
+<li><a href="#iris"><span class="toc-section-number">2.1</span> IRIs</a><ul>
+<li><a href="#absolute-iris"><span class="toc-section-number">2.1.1</span> Absolute IRIs</a></li>
+<li><a href="#prefixed-names"><span class="toc-section-number">2.1.2</span> Prefixed names</a></li>
+</ul></li>
+<li><a href="#literal-nodes"><span class="toc-section-number">2.2</span> Literal nodes</a><ul>
+<li><a href="#literal-nodes-with-language-tag"><span class="toc-section-number">2.2.1</span> Literal nodes with language tag</a></li>
+<li><a href="#simple-literals"><span class="toc-section-number">2.2.2</span> Simple literals</a></li>
+<li><a href="#literal-nodes-with-datatype"><span class="toc-section-number">2.2.3</span> Literal nodes with datatype</a></li>
+</ul></li>
+<li><a href="#blank-nodes"><span class="toc-section-number">2.3</span> Blank nodes</a><ul>
+<li><a href="#identified-blank-nodes"><span class="toc-section-number">2.3.1</span> Identified blank nodes</a></li>
+<li><a href="#anonymous-blank-nodes"><span class="toc-section-number">2.3.2</span> Anonymous blank nodes</a></li>
+</ul></li>
+<li><a href="#graphs"><span class="toc-section-number">2.4</span> Graphs</a><ul>
+<li><a href="#subject-maps"><span class="toc-section-number">2.4.1</span> Subject maps</a></li>
+<li><a href="#predicate-maps"><span class="toc-section-number">2.4.2</span> Predicate maps</a></li>
+<li><a href="#encoded-objects"><span class="toc-section-number">2.4.3</span> Encoded objects</a></li>
+<li><a href="#namespace-maps"><span class="toc-section-number">2.4.4</span> Namespace maps</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#references"><span class="toc-section-number">3</span> References</a><ul>
+<li><a href="#normative-references"><span class="toc-section-number">3.1</span> Normative references</a></li>
+<li><a href="#other-references"><span class="toc-section-number">3.2</span> Other references</a></li>
+</ul></li>
+<li><a href="#examples"><span class="toc-section-number">4</span> Examples</a></li>
+<li><a href="#appendix"><span class="toc-section-number">5</span> Appendix</a></li>
+</ul>
+</nav>
+<section class="level1" id="introduction">
+<h1><a href="#introduction"><span class="header-section-number">1</span> Introduction</a></h1>
+<p>This document defines an encoding of RDF graphs called <strong>another RDF encoding form (aREF)</strong>. The encoding combines the best parts of existing RDF serializations <a href="http://www.w3.org/TR/turtle/">Turtle</a>, <a href="http://json-ld.org/">JSON-LD</a>, and <a href="http://docs.api.talis.com/platform-api/output-types/rdf-json">RDF/JSON</a>. In contrast to these formats, RDF data in aREF is not serialized in form of Unicode strings but encoded in form of <a href="#lists-map-structures">list-map-structures</a>. Thus, aREF allows to express RDF graphs in different data structuring languages and type systems of programming languages.</p>
+<section class="level2" id="status-of-this-document">
+<a id="Status of this document"></a><h2><a href="#status-of-this-document"><span class="header-section-number">1.1</span> Status of this document</a></h2>
+<p>This is version 0.03 of aREF specification, last modified at 2013-11-14 with commit <a href="https://github.com/gbv/aREF/commit/37c2d882eeb486f40a83bad26b508b488d886036">37c2d88</a>. The most recent version of this document is made available at <a href="http://gbv.github.io/aREF/">http://gbv.github.io/aREF/</a>.</p>
+<p>The specification of aREF is hosted in a public git repository at <a href="https://github.com/gbv/aREF/">https://github.com/gbv/aREF/</a>, written in in <a href="http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html">Pandoc’s Markdown</a> and managed with <a href="https://github.com/jakobib/makespec">makespec</a>. Please add and comment on issues to this specification at <a href="https://github.com/gbv/aREF/issues">https://github.com/gbv/aREF/issues</a>.</p>
+</section>
+<section class="level2" id="terminology">
+<a id="Terminology"></a><h2><a href="#terminology"><span class="header-section-number">1.2</span> Terminology</a></h2>
+<p>Within this document terms written in “<strong>bold</strong>” refer to defined concepts in their definition and terms written in “<em>italics</em>” refer to concepts defined elsewhere in this document. Uppercase keywords (MUST, MAY, RECOMMENDED, SHOULD…) are used as defined in <a href="http://tools.ietf.org/html/rfc2119">RFC 2119</a>.</p>
+<p>Syntax rules in this document are expressed using the <a href="http://www.w3.org/TR/REC-xml/#sec-notation">EBNF notation used by W3C</a>. The term <strong>string</strong> in this document always refers to Unicode strings as defined by <a href="http://www.unicode.org/versions/Unicode6.3.0/">Unicode</a>. A <em>string</em> can also be defined with the following syntax rule:</p>
+<pre><code>string ::= [#x0-#x10FFFF]*</code></pre>
+<p>Strings SHOULD be ine in Normal Form C (<a href="http://www.unicode.org/unicode/reports/tr15/">NFC</a>). Applications MAY restrict strings by disallowing selected Unciode codepoints, such as the 66 Unicode noncharacters or the set of Unicode characters not expressible in XML.</p>
+</section>
+<section class="level2" id="rdf-data">
+<a id="RDF data"></a><h2><a href="#rdf-data"><span class="header-section-number">1.3</span> RDF data</a></h2>
+<p>RDF is a graph-based data structuring languages defined as abstract syntax by Klyne and Carroll (<a href="http://www.w3.org/TR/rdf-concepts/">2004</a>). Several RDF variants exist. RDF data as encoded by aREF is defined as following:</p>
+<ul>
+<li>An <strong>RDF graph</strong> is a set of <em>triples</em>.</li>
+<li>A <strong>triple</strong> (also known as “statement”) consists of a <em>subject</em>, a <em>predicate</em>, and an <em>object</em>.</li>
+<li>A <strong>subject</strong> is either an <em>IRI</em> or a <em>blank node</em>.</li>
+<li>A <strong>predicate</strong> (also known as “property”) is an <em>IRI</em>.</li>
+<li>An <strong>object</strong> is either an <em>IRI</em> or a <em>blank node</em> or a <em>literal node</em>.</li>
+<li>An <strong>IRI</strong> (Internationalized Resource Identifier) is a <em>string</em> that conforms to the IRI syntax defined in <a href="http://tools.ietf.org/html/rfc3987">RFC 3987</a>.</li>
+<li>A <strong>blank node</strong> is neither an <em>IRI</em> nor a <em>literal node</em>.</li>
+<li>A <strong>literal node</strong> is a <em>string</em> tagged by either a <em>language tag</em> or by a <em>datatype</em>.</li>
+<li>A <strong>simple literal</strong> is a literal node with datatype <code>http://www.w3.org/2001/XMLSchema#string</code>.</li>
+<li>A <strong>datatype</strong> is an <em>IRI</em>.</li>
+<li>A <strong>language tag</strong> is a well-formed laguage tag as defined in <a href="http://tools.ietf.org/html/bcp47">BCP 47</a>.</li>
+<li>A <strong>blank node</strong> is neither an <em>IRI</em> nor a <em>literal node</em>.</li>
+</ul>
+<p>This definition neither includes relative IRIs nor blank node identifiers as known from some RDF serialization forms. To refer to a particular blank node within the scope of the same RDF graph, aREF supports <a href="#identified-blank-nodes">identified blank nodes</a>.</p>
+</section>
+<section class="level2" id="lists-map-structures">
+<a id="Lists-map-structures"></a><h2><a href="#lists-map-structures"><span class="header-section-number">1.4</span> Lists-map-structures</a></h2>
+<p>A <strong>list-map-structure</strong> is an abstract data structure build of</p>
+<ul>
+<li><em>strings</em>, which are Unicode strings,</li>
+<li><strong>lists</strong>, which are a sequences of zero or more <em>list-map-structures</em>,</li>
+<li>and <strong>maps</strong>, which are sets of <em>strings</em> (the maps’ <em>keys</em>) and a mapping from these keys <em>list-map-structures</em>.</li>
+</ul>
+<p>Every aREF document MUST be given as <em>map</em>. Applications MAY restrict aREF documents to non-recursive <em>list-map-structures</em>.</p>
+</section>
+</section>
+<section class="level1" id="encoding">
+<h1><a href="#encoding"><span class="header-section-number">2</span> Encoding</a></h1>
+<p>An <em>RDF graph</em> in aREF is encoded in form of a <em>list-map-structure</em> as following.</p>
+<section class="level2" id="iris">
+<a id="IRIs"></a><h2><a href="#iris"><span class="header-section-number">2.1</span> IRIs</a></h2>
+<p>An <em>IRI</em> in aREF is encoded as string, either in form of <em>absolute IRIs</em> or as <em>prefixed names</em>.</p>
+<section class="level3" id="absolute-iris">
+<h3><a href="#absolute-iris"><span class="header-section-number">2.1.1</span> Absolute IRIs</a></h3>
+<p>An <strong>absolute IRI</strong> is either an IRI enclosed in angle brackets (<code>&lt;</code> and <code>&gt;</code>), or an IRI that also matches the grammar rule <code>plainIRI</code> but not any of the the grammar rules <code>explicitString</code>, <code>languageTaggedString</code> and <code>datatypedString</code>. .</p>
+<pre><code>  absoluteIRI   ::= &quot;&lt;&quot; IRI &quot;&gt;&quot; | plainIRI /* IRI syntax rule from RFC 3987 */
+
+  plainIRI      ::= [a-z] ( [a-z] | [0-9] | &quot;+&quot; | &quot;.&quot; | &quot;-&quot; )* &quot;:&quot; string?
+                    /* note additional constraints! */</code></pre>
+</section>
+<section class="level3" id="prefixed-names">
+<h3><a href="#prefixed-names"><span class="header-section-number">2.1.2</span> Prefixed names</a></h3>
+<p>A <strong>prefixed name</strong> consists of a <strong>prefix</strong> and a <strong>name</strong> separated by a colon (<code>:</code>). The prefix is a string starting with a lowercase letter (<code>a-z</code>) optionally followed by a sequence of lowercase letters and digits (<code>0-9</code>).</p>
+<pre><code>  prefixedName  ::= prefix &quot;:&quot; name
+
+  prefix        ::= [a-z] ( [a-z] | [0-9] )*</code></pre>
+<p>As key in a <a href="#predicate-maps">predicate map</a> a prefixed name MAY also use an underscore (“<code>_</code>”) instead of a colon.</p>
+<pre><code>  uPrefixedName ::= prefix &quot;_&quot; name</code></pre>
+<p>A name is a string that is either empty or conforms to the following syntax:</p>
+<pre><code>  name          ::= nameStartChar nameChar*
+
+  nameStartChar ::= [A-Z] | &quot;_&quot; | [a-z] | [#x00C0-#x00D6] | [#x00D8-#x00F6] |
+                    [#x00F8-#x02FF] | [#x0370-#x037D] | [#x037F-#x1FFF] | 
+                    [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | 
+                    [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] |
+                    [#x10000-#xEFFFF]
+
+  nameChar      ::= nameStartChar | &#39;-&#39; | [0-9] | #x00B7 | 
+                    [#x0300-#x036F] | [#x203F-#x2040]</code></pre>
+<p>This definition of prefixes is more restrictive than the definition of prefixes in Turtle and JSON-LD. The restriction of suffixes allows for absolute URI references such as <code>geo:48.2010,16.3695,183</code> <a href="http://tools.ietf.org/html/rfc5870">RFC 5870</a> and <code>tag:yaml.org,2002:int</code> <a href="http://tools.ietf.org/html/rfc4151">RFC 4151</a> while still using these URI scheme names as URI prefixes (e.g. <code>geo:Point</code> and <code>tag:Tag</code>).</p>
+</section>
+</section>
+<section class="level2" id="literal-nodes">
+<a id="Literal nodes"></a><h2><a href="#literal-nodes"><span class="header-section-number">2.2</span> Literal nodes</a></h2>
+<p>Literal nodes are encoded as strings conforming to the following rules:</p>
+<pre><code>  literalNode          ::= explicitString | languageTaggedString | datatypedString | string
+
+  explicitString       ::= string &quot;@&quot;
+
+  languageTaggedString ::= string &quot;@&quot; languageTag
+
+  languageTag ::= [a-z]{2,8} ( &quot;-&quot; [a-z0-9]{1,8} )*</code></pre>
+<p>Note that the syntax rule of a language tag in aREF is slightly more restrictive than the syntax of a language tag in <a href="http://www.w3.org/TR/turtle/">Turtle</a> but less restrictive than the syntax of a language tag in JSON-LD, which refers to well-formed language tags as defined in <a href="http://tools.ietf.org/html/bcp47">BCP 47</a>.</p>
+<section class="level3" id="literal-nodes-with-language-tag">
+<h3><a href="#literal-nodes-with-language-tag"><span class="header-section-number">2.2.1</span> Literal nodes with language tag</a></h3>
+<p>Literal nodes with language tag are encoded by appending the character “<code>@</code>” and the language tag to the literal node’s string.</p>
+</section>
+<section class="level3" id="simple-literals">
+<h3><a href="#simple-literals"><span class="header-section-number">2.2.2</span> Simple literals</a></h3>
+<p>A simple literal is encoded by optionally appending the character <code>@</code> to the literal node’s string. The character “<code>@</code>” MUST be appended if the literal node’s string matches the IRI syntax as defined in <a href="http://tools.ietf.org/html/rfc3987">RFC 3987</a> or the syntax of an <a href="#identified-blank-nodes">identified blank node</a>. Simple literals MAY also but SHOULD NOT be encoded as literal nodes with datatype IRI <code>http://www.w3.org/2001/XMLSchema#string</code>.</p>
+</section>
+<section class="level3" id="literal-nodes-with-datatype">
+<h3><a href="#literal-nodes-with-datatype"><span class="header-section-number">2.2.3</span> Literal nodes with datatype</a></h3>
+<p>A literal node with datatype is encoded by appending one or two characters “<code>^</code>” and the datatype’s IRI either enclosed in “<code>&lt;</code>” and “<code>&gt;</code>” or as prefixed name.</p>
+<pre><code>  datatypedString      ::= string &quot;^&quot; &quot;^&quot;? ( prefixedName | &quot;&lt;&quot; IRI &quot;&gt;&quot; )</code></pre>
+<p>Note that for some reason <a href="http://www.w3.org/TR/turtle/">Turtle</a> uses the character sequence “<code>^^</code>” instead of a single “<code>^</code>” to serialize literal nodes with datatype.</p>
+</section>
+</section>
+<section class="level2" id="blank-nodes">
+<a id="Blank nodes"></a><h2><a href="#blank-nodes"><span class="header-section-number">2.3</span> Blank nodes</a></h2>
+<p>Blank nodes can be encoded as <em>identified blank nodes</em> or as <em>anonymous blank nodes</em>.</p>
+<section class="level3" id="identified-blank-nodes">
+<h3><a href="#identified-blank-nodes"><span class="header-section-number">2.3.1</span> Identified blank nodes</a></h3>
+<p>An <strong>identified blank node</strong> is a <em>blank node</em> that is given a <strong>blank node identifier</strong> for referencing within the same <em>RDF graph</em>. Note that <em>blank node identifiers</em> are always disjoint between different <em>RDF graphs</em>, so there is no simple way to reference a particular <em>blank node</em> from an external document. An <em>identified blank node</em> in aREF is encoded as a string that starts with “<code>_:</code>” followed by the <em>blank node identifier</em>. The set of <em>blank node identifiers</em> is limited to sequences of letters <code>a</code> to <code>z</code>, <code>A</code> to <code>Z</code>, and digits <code>0</code> to <code>9</code>.</p>
+<pre><code>  blankNodeIdentifier ::= &quot;_:&quot; ( [a-z] | [A-Z] | [0-9] )+</code></pre>
+<p>Note that this rule is more restrictive than the rule of blank node identifiers in <a href="http://www.w3.org/TR/turtle/">Turtle</a> and in <a href="http://json-ld.org/">JSON-LD</a>.</p>
+</section>
+<section class="level3" id="anonymous-blank-nodes">
+<h3><a href="#anonymous-blank-nodes"><span class="header-section-number">2.3.2</span> Anonymous blank nodes</a></h3>
+<p>An <strong>anonymous blank node</strong> in aREF is encoded by a <a href="#predicate-maps">predicate map</a> that does not include the key “<code>_id</code>”. In the simplest case the <em>blank node</em> is encoded by an empty <em>map</em>.</p>
+</section>
+</section>
+<section class="level2" id="graphs">
+<a id="Graphs"></a><h2><a href="#graphs"><span class="header-section-number">2.4</span> Graphs</a></h2>
+<p>An <em>RDF graph</em> is encoded as <em>map</em>. Two kinds of maps can be distinguished: a <em><a href="#subject-maps">subject map</a></em> contains zero or more <em>subjects</em> as <em>keys</em>, similar to an <em>RDF graph</em> encoded in <a href="http://docs.api.talis.com/platform-api/output-types/rdf-json">RDF/JSON</a>. A <a href="#predicate-maps">predicate map</a> has a common <em>subject</em> and a set of one ore more <em>predicates</em> as <em>keys</em>. Both kinds of <em>maps</em> can additionally contain a <a href="#namespace-maps">namespace map</a>. An <em>RDF graph</em> encoded as <em>predicate map</em> MUST contain the special <em>key</em> “<code>_id</code>”.</p>
+<section class="level3" id="subject-maps">
+<h3><a href="#subject-maps"><span class="header-section-number">2.4.1</span> Subject maps</a></h3>
+<p>A <strong>subject map</strong> is a <em>map</em> where</p>
+<ul>
+<li>every key, expect the optional key “<code>_ns</code>”, is an <a href="#iris">encoded IRI</a>,</li>
+<li>and every value is a <em>predicate map</em> that does not contain the special <em>keys</em> “<code>_ns</code>” and “<code>_id</code>”.</li>
+</ul>
+</section>
+<section class="level3" id="predicate-maps">
+<h3><a href="#predicate-maps"><span class="header-section-number">2.4.2</span> Predicate maps</a></h3>
+<p>A <strong>predicate map</strong> is a <em>map</em> where every <em>key</em>, except the optional <em>keys</em> “<code>_ns</code>” and “<code>_id</code>”, is</p>
+<ul>
+<li>either an <a href="#iris">encoded IRI</a> (as absolute IRI or as prefixed name, also possible with underscore alternative to colon),</li>
+<li>or the string “<code>a</code>” as alias for the IRI “<code>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</code>”</li>
+</ul>
+<p>and every value of these <em>keys</em> is an <a href="#encoded-objects">encoded object</a>. A <em>predicate map</em> MUST NOT be empty, not counting the optional <em>keys</em>.</p>
+</section>
+<section class="level3" id="encoded-objects">
+<h3><a href="#encoded-objects"><span class="header-section-number">2.4.3</span> Encoded objects</a></h3>
+<p>An <strong>encoded object</strong> in aREF represents one or multiple <em>objects</em> of RDF <em>triples</em> with same <em>subject</em> and same <em>predicate</em>. An encoded object can be any of:</p>
+<ul>
+<li>an <a href="#iris">encoded IRI</a>,</li>
+<li>a <a href="#literal-nodes">literal node</a>, encoded as string,</li>
+<li>a <a href="#blank-nodes">blank node</a>, encoded as string,</li>
+<li>a non-empty <em>list</em> of strings, each encoding an RDF <em>object</em>.</li>
+</ul>
+<p>A <em>list</em> represents a set of RDF objects, so the order of elements is irrelevant. A list SHOULD NOT contain the same RDF object multiple times (as same string or in different encoding forms).</p>
+<p>The object of a single RDF triple can be encoded both as string and as list of one string. The former form is RECOMMENDED but the latter form is possible as well, as known from <a href="http://docs.api.talis.com/platform-api/output-types/rdf-json">RDF/JSON</a>.</p>
+</section>
+<section class="level3" id="namespace-maps">
+<h3><a href="#namespace-maps"><span class="header-section-number">2.4.4</span> Namespace maps</a></h3>
+<pre><code>this section is not finished yet.</code></pre>
+<p>The special key <code>_ns</code> MAY be used in a <em>map</em> to indicate a namespace map.</p>
+<p>SHOULD/MUST (?) be at the top level of an aREF document (there can only be one namespaceMap in an aREF document). TODO: What about recursive documents?</p>
+<p>…</p>
+<p>The following namespace definitions are assumed by default:</p>
+<ul>
+<li>xsd</li>
+<li>rdf</li>
+<li>rdfs</li>
+<li>foaf</li>
+<li>owl</li>
+<li>dct</li>
+<li>…</li>
+</ul>
+</section>
+</section>
+</section>
+<section class="level1" id="references">
+<h1><a href="#references"><span class="header-section-number">3</span> References</a></h1>
+<section class="level2" id="normative-references">
+<a id="Normative references"></a><h2><a href="#normative-references"><span class="header-section-number">3.1</span> Normative references</a></h2>
+<ul>
+<li><em>The Unicode Standard, Version 6.3.0</em> The Unicode Consortium, 2013. ISBN 978-1-936213-08-5. <a href="http://www.unicode.org/versions/Unicode6.3.0/">http://www.unicode.org/versions/Unicode6.3.0/</a></li>
+</ul>
+<ul>
+<li><p>Martin Düst; Michel Suignard: <em>Internationalized Resource Identifiers (IRIs)</em>. RFC3987, January 2005. <a href="http://tools.ietf.org/html/rfc3987">http://tools.ietf.org/html/rfc3987</a></p></li>
+<li><p>A. Phillips; M. Davis: <em>Tags for Identifying Languages</em>. BCP 47, September 2009. <a href="http://tools.ietf.org/html/bcp47">http://tools.ietf.org/html/bcp47</a></p></li>
+</ul>
+<ul>
+<li>Mark Davis; Martin Düst: <em>Unicode Normalization Forms</em>. Unicode Standard Annex #15 <a href="http://www.unicode.org/unicode/reports/tr15/">http://www.unicode.org/unicode/reports/tr15/</a></li>
+</ul>
+</section>
+<section class="level2" id="other-references">
+<a id="Other references"></a><h2><a href="#other-references"><span class="header-section-number">3.2</span> Other references</a></h2>
+<ul>
+<li><p>Graham Klyne; Jeremy J. Carroll (editors): <em>Resource Description Framework (RDF): Concepts and Abstract Syntax</em>. W3C Recommendation 10 February 2004 <http://www.w3.org/TR/rdf-concepts/](http://www.w3.org/TR/rdf-concepts/></p></li>
+<li><p>Eric Prud’hommeaux; Gavin Carothers (editors): <em>Turtle. Terse RDF Triple Language</em>. W3C Candidate Recommendation 19 February 2013. <http://www.w3.org/TR/turtle/](http://www.w3.org/TR/turtle/></p></li>
+<li><p>Manu Sporny; Gregg Kellogg; Markus Lanthaler (editors): <em>JSON-LD 1.0. A JSON-based Serialization for Linked Data</em>. W3C Candidate Recommendation 10 September 2013. <http://www.w3.org/TR/json-ld/](http://www.w3.org/TR/json-ld/></p></li>
+<li><p>Talis (publisher): <em>RDF JSON</em>. <a href="http://docs.api.talis.com/platform-api/output-types/rdf-json">http://docs.api.talis.com/platform-api/output-types/rdf-json</a></p></li>
+<li><p>Uniform Resource Identifier (URI) Schemes. <a href="http://www.iana.org/assignments/uri-schemes/">http://www.iana.org/assignments/uri-schemes/</a></p></li>
+</ul>
+</section>
+</section>
+<section class="level1" id="examples">
+<h1><a href="#examples"><span class="header-section-number">4</span> Examples</a></h1>
+<p>An aREF document can be expressed both in data structuring languages (JSON, YAML…) and in type systems of programming languages (Python, Ruby, Perl…).</p>
+<p>Example 1/2 from JSON-LD adopted as aRef in JSON or Python:</p>
+<pre><code>{
+  &quot;schema:name&quot;: &quot;Manu Sporny&quot;,
+  &quot;schema:url&quot;: &quot;http://manu.sporny.org/&quot;,
+  &quot;schema:image&quot;: &quot;http://manu.sporny.org/images/manu.png&quot;
+}</code></pre>
+<p>Example 4/5 from JSON-LD adopted as aRef in JSON or Python:</p>
+<pre><code>{
+  &quot;_ns&quot;: { &quot;schema&quot;: &quot;http://schema.org/&quot; },
+  &quot;schema:name&quot;: &quot;Manu Sporny&quot;,
+  &quot;schema:url&quot;: &quot;http://manu.sporny.org/&quot;,
+  &quot;schema:image&quot;: &quot;http://manu.sporny.org/images/manu.png&quot;
+}</code></pre>
+<p>Example 11 from JSON-LD adopted as aRef in YAML:</p>
+<pre><code>---
+_id: http://me.markus-lanthaler.com/
+schema:name: Markus Lanthaler</code></pre>
+<p>Example 14 from JSON-LD adopted as aRef in YAML:</p>
+<pre><code>---
+_id: http://example.org/places#BrewEats
+a: 
+    - schema:Restaurant
+    - schema:Brewery</code></pre>
+<p>Example 20 from JSON-LD adopted as aRef in YAML:</p>
+<pre><code>---
+_ns:
+    xsd: http://www.w3.org/2001/XMLSchema#
+    foaf: http://xmlns.com/foaf/0.1/
+_id: http://me.markus-lanthaler.com/
+a: foaf:Person
+foaf:name: Markus Lanthaler
+foaf:homepage: http://www.markus-lanthaler.com/
+foaf:depiction: http://twitter.com/account/profile_image/markuslanthaler</code></pre>
+<p>Example 23 from JSON-LD adopted as aRef in Perl:</p>
+<pre><code>{
+  _id =&gt; &quot;http://example.org/posts#TripToWestVirginia&quot;,
+  a =&gt; &quot;http://schema.org/BlogPosting&quot;,
+  dct_modified =&gt; &quot;2010-05-29T14:17:39+02:00^xsd:dateTime&quot;
+}</code></pre>
+<p>Example 24 from JSON-LD adopted as aRef in Perl:</p>
+<pre><code>{
+  _id =&gt; &quot;http://example.com/people#john&quot;,
+  foaf_name =&gt; &quot;John Smith&quot;,
+  foaf_age  =&gt; &quot;41^xsd:integer&quot;,
+  foaf_homepage =&gt; [qw(
+     http://personal.example.org/
+     http://work.example.com/jsmith/
+  )],
+}</code></pre>
+<p>…</p>
+<p>More examples:</p>
+<pre><code>    { &quot;dct:modified&quot;: &quot;2010-05-29T14:17:39+02:00^^xsd:dateTime&quot; }
+    { &quot;dct:modified&quot;: &quot;2010-05-29T14:17:39+02:00^^&lt;http://www.w3.org/2001/XMLSchema#dateTime&gt;&quot; }</code></pre>
+<p>Examples of RDF literals encoded as aRef strings:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">aRef string</th>
+<th style="text-align: left;">RDF literal (in Turtle syntax)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">@</td>
+<td style="text-align: left;"><code>&quot;&quot;</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><em>empty string</em></td>
+<td style="text-align: left;"><code>&quot;&quot;</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">^xsd:string</td>
+<td style="text-align: left;"><code>&quot;&quot;</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">^^xsd:string</td>
+<td style="text-align: left;"><code>&quot;&quot;</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">@@</td>
+<td style="text-align: left;"><code>&quot;@&quot;</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">@^xsd:string</td>
+<td style="text-align: left;"><code>&quot;@&quot;</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">alice@en</td>
+<td style="text-align: left;"><code>&quot;alice&quot;@en</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">alice@example.com</td>
+<td style="text-align: left;"><code>&quot;alice@example.com&quot;</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">123</td>
+<td style="text-align: left;"><code>&quot;123&quot;</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">忍者@ja</td>
+<td style="text-align: left;"><code>&quot;忍者&quot;@ja</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ninja@en@</td>
+<td style="text-align: left;"><code>&quot;Ninja@en&quot;</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">foo:bar</td>
+<td style="text-align: left;"><em>not a literal node, but an IRI</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="level1" id="appendix">
+<h1><a href="#appendix"><span class="header-section-number">5</span> Appendix</a></h1>
+<p>IRI syntax as defined in <a href="http://tools.ietf.org/html/rfc3987">RFC 3987</a>:</p>
+<pre><code>   IRI            = scheme &quot;:&quot; ihier-part [ &quot;?&quot; iquery ]
+                         [ &quot;#&quot; ifragment ]
+
+   ihier-part     = &quot;//&quot; iauthority ipath-abempty
+                  / ipath-absolute
+                  / ipath-rootless
+                  / ipath-empty
+
+   iauthority     = [ iuserinfo &quot;@&quot; ] ihost [ &quot;:&quot; port ]
+   iuserinfo      = *( iunreserved / pct-encoded / sub-delims / &quot;:&quot; )
+   ihost          = IP-literal / IPv4address / ireg-name
+
+   ireg-name      = *( iunreserved / pct-encoded / sub-delims )
+
+   ipath          = ipath-abempty   ; begins with &quot;/&quot; or is empty
+                  / ipath-absolute  ; begins with &quot;/&quot; but not &quot;//&quot;
+                  / ipath-noscheme  ; begins with a non-colon segment
+                  / ipath-rootless  ; begins with a segment
+                  / ipath-empty     ; zero characters
+
+   ipath-abempty  = *( &quot;/&quot; isegment )
+   ipath-absolute = &quot;/&quot; [ isegment-nz *( &quot;/&quot; isegment ) ]
+   ipath-noscheme = isegment-nz-nc *( &quot;/&quot; isegment )
+   ipath-rootless = isegment-nz *( &quot;/&quot; isegment )
+   ipath-empty    = 0&lt;ipchar&gt;
+
+   isegment       = *ipchar
+   isegment-nz    = 1*ipchar
+   isegment-nz-nc = 1*( iunreserved / pct-encoded / sub-delims
+                        / &quot;@&quot; )
+                  ; non-zero-length segment without any colon &quot;:&quot;
+
+   ipchar         = iunreserved / pct-encoded / sub-delims / &quot;:&quot;
+                  / &quot;@&quot;
+
+   iquery         = *( ipchar / iprivate / &quot;/&quot; / &quot;?&quot; )
+
+   ifragment      = *( ipchar / &quot;/&quot; / &quot;?&quot; )
+
+   iunreserved    = ALPHA / DIGIT / &quot;-&quot; / &quot;.&quot; / &quot;_&quot; / &quot;~&quot; / ucschar
+
+   ucschar        = %xA0-D7FF / %xF900-FDCF / %xFDF0-FFEF
+                  / %x10000-1FFFD / %x20000-2FFFD / %x30000-3FFFD
+                  / %x40000-4FFFD / %x50000-5FFFD / %x60000-6FFFD
+                  / %x70000-7FFFD / %x80000-8FFFD / %x90000-9FFFD
+                  / %xA0000-AFFFD / %xB0000-BFFFD / %xC0000-CFFFD
+                  / %xD0000-DFFFD / %xE1000-EFFFD
+
+   iprivate       = %xE000-F8FF / %xF0000-FFFFD / %x100000-10FFFD
+
+   scheme         = ALPHA *( ALPHA / DIGIT / &quot;+&quot; / &quot;-&quot; / &quot;.&quot; )
+
+   port           = *DIGIT
+
+   IP-literal     = &quot;[&quot; ( IPv6address / IPvFuture  ) &quot;]&quot;
+
+   IPvFuture      = &quot;v&quot; 1*HEXDIG &quot;.&quot; 1*( unreserved / sub-delims / &quot;:&quot; )
+
+   IPv6address    =                            6( h16 &quot;:&quot; ) ls32
+                  /                       &quot;::&quot; 5( h16 &quot;:&quot; ) ls32
+                  / [               h16 ] &quot;::&quot; 4( h16 &quot;:&quot; ) ls32
+                  / [ *1( h16 &quot;:&quot; ) h16 ] &quot;::&quot; 3( h16 &quot;:&quot; ) ls32
+                  / [ *2( h16 &quot;:&quot; ) h16 ] &quot;::&quot; 2( h16 &quot;:&quot; ) ls32
+                  / [ *3( h16 &quot;:&quot; ) h16 ] &quot;::&quot;    h16 &quot;:&quot;   ls32
+                  / [ *4( h16 &quot;:&quot; ) h16 ] &quot;::&quot;              ls32
+                  / [ *5( h16 &quot;:&quot; ) h16 ] &quot;::&quot;              h16
+                  / [ *6( h16 &quot;:&quot; ) h16 ] &quot;::&quot;
+
+   h16            = 1*4HEXDIG
+   ls32           = ( h16 &quot;:&quot; h16 ) / IPv4address
+
+   IPv4address    = dec-octet &quot;.&quot; dec-octet &quot;.&quot; dec-octet &quot;.&quot; dec-octet
+
+   dec-octet      = DIGIT                 ; 0-9
+                  / %x31-39 DIGIT         ; 10-99
+                  / &quot;1&quot; 2DIGIT            ; 100-199
+                  / &quot;2&quot; %x30-34 DIGIT     ; 200-249
+                  / &quot;25&quot; %x30-35          ; 250-255
+
+   pct-encoded    = &quot;%&quot; HEXDIG HEXDIG
+
+   unreserved     = ALPHA / DIGIT / &quot;-&quot; / &quot;.&quot; / &quot;_&quot; / &quot;~&quot;
+   reserved       = gen-delims / sub-delims
+   gen-delims     = &quot;:&quot; / &quot;/&quot; / &quot;?&quot; / &quot;#&quot; / &quot;[&quot; / &quot;]&quot; / &quot;@&quot;
+   sub-delims     = &quot;!&quot; / &quot;$&quot; / &quot;&amp;&quot; / &quot;&#39;&quot; / &quot;(&quot; / &quot;)&quot;
+                  / &quot;*&quot; / &quot;+&quot; / &quot;,&quot; / &quot;;&quot; / &quot;=&quot;</code></pre>
+</section>
+</body>
+</html>
