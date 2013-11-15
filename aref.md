@@ -140,6 +140,11 @@ and JSON-LD. The restriction allows for both, URI scheme names as URI prefixes
 (e.g. "`geo:Point`" and "`tag:Tag`") and absolute URI references such as
 "`geo:48.2010,16.3695,183`" ([RFC 5870]) and "`tag:yaml.org,2002:int`" ([RFC 4151]).
 
+***TODO:** See [*namespace map*] for how to construct IRIs from prefixed names*
+
+Applications SHOULD warn about unknown prefixes. Applications MAY ignore all
+triples that include a node with an unknown prefix.
+
 ## Literal nodes
 
 A literal node in aREF is encoded as string in one of three forms:
@@ -214,7 +219,7 @@ An *RDF graph* in aREF is encoded as a [*list-map-structure*] that is:
 * either a [*predicate map*] that MUST contain the special *key* "`_id`",
 * or a [*subject map*].
 
-Both kinds of *maps* can additionally contain a [*namespace map*].
+Both kinds of *maps* optionally contain a [*namespace map*].
 
 ### Subject maps
 
@@ -273,26 +278,61 @@ well, as known from [RDF/JSON].
 
 [*namespace map*]: #namespace-maps
 
-    this section is not finished yet.
+A **namespace map** in aREF is a *map* where every *key* conforms to the
+`prefix` syntax rule (see [*prefixed name*]) and is mapped to an IRI, given as
+string that conforms to the `IRI` syntax rule from [RFC 3987]. The IRI is
+called **namespace URI**. A *namespace map* can be specified both, explicitly
+with the special key "`_ns`" in a [*subject map*] or in a [*predicate map*],
+and implicitly by assuming a [predefined namespace map].
 
-The special key `_ns` MAY be used in a *map* to indicate a namespace
-map.
+Namespace maps SHOULD be given at the root *map* of an encoded *RDF graph*.
+Applications MAY ignore all occurrences of *namespace maps* but at the root.
 
-SHOULD/MUST (?) be at the top level of an aREF document (there can only
-be one namespaceMap in an aREF document). TODO: What about recursive
-documents?
+***TODO**: explain how mappings can be overriden. Explain use in recursive
+documents. Better limit `_ns` to one in an aREF document?*
 
-...
+### Predefined namespace maps
 
-The following namespace definitions are assumed by default:
+[predefined namespace map]: #predefined-namespace-maps
 
--   xsd
--   rdf
--   rdfs
--   foaf
--   owl
--   dct
--   ...
+The following [*namespace map*] MUST be assumed implicitly:
+
+prefix  namespace URI
+------- --------------------------------------------
+rdf     http://www.w3.org/1999/02/22-rdf-syntax-ns#
+rdfs    http://www.w3.org/2000/01/rdf-schema#
+owl     http://www.w3.org/2002/07/owl#
+xsd     http://www.w3.org/2001/XMLSchema#
+------- --------------------------------------------
+
+The following [*namespace map*] SHOULD also be assumed implicitly:
+
+prefix  namespace URI                                   ontology
+------- ----------------------------------------------- ------------------------------------------------------------ 
+bibo    http://purl.org/ontology/bibo/                  The Bibliographic Ontology
+cc      http://creativecommons.org/ns#                  Creative Commons Rights Expression Language
+dc	    http://purl.org/dc/elements/1.1/                DCMI Metadata Terms    
+dcmit   http://purl.org/dc/dcmitype/                    DCMI Type Vocabulary
+dct     http://purl.org/dc/terms/                       DCMI Metadata Terms
+foaf    http://xmlns.com/foaf/0.1/                      Friend of a Friend vocabulary
+geo     http://www.w3.org/2003/01/geo/wgs84_pos#        WGS84 Geo Positioning
+gr      http://purl.org/goodrelations/v1#               The GoodRelations Ontology for Semantic Web-based E-Commerce
+org     http://www.w3.org/ns/org#                       Core organization ontology
+schema  http://schema.org/                              Schema.org vocabulary
+sioc    http://rdfs.org/sioc/ns#                        Semantically-Interlinked Online Communities
+skos    http://www.w3.org/2004/02/skos/core#            Simple Knowledge Organization System
+time    http://www.w3.org/2006/time#                    Time Ontology
+vann    http://purl.org/vocab/vann/                     VANN: A vocabulary for annotating vocabulary descriptions
+vcard   http://www.w3.org/2006/vcard/ns#                An Ontology for vCards
+void    http://rdfs.org/ns/void#                        Vocabulary of Interlinked Datasets
+vs      http://www.w3.org/2003/06/sw-vocab-status/ns#   SemWeb Vocab Status ontology
+------- ----------------------------------------------- ------------------------------------------------------------ 
+
+Applications MAY predefine additional implicit namespace maps. Mappings in an
+explicit [*namespace map*] precedence over implicit mappings.
+
+***TODO:** possibly add `dcat`, `prov`, `dbp`, `dbo`, `obo`, `rss`..., possibly remove `sioc`?
+Sources: http://stats.lod2.eu/vocabularies, http://prefix.cc/popular/all.txt ...*
 
 # References
 
@@ -337,7 +377,7 @@ The following namespace definitions are assumed by default:
     Recommendation 10 September 2013.
     <http://www.w3.org/TR/json-ld/](http://www.w3.org/TR/json-ld/>
 
--   Talis (publisher): *RDF JSON*.
+-   Talis (publisher): *RDF/JSON*.
     <http://docs.api.talis.com/platform-api/output-types/rdf-json>
 
 -   Uniform Resource Identifier (URI) Schemes.
