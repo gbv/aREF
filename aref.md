@@ -388,24 +388,29 @@ Sources: http://stats.lod2.eu/vocabularies, http://prefix.cc/popular/all.txt, ht
 
 ## Other references
 
--   Graham Klyne; Jeremy J. Carroll (editors): *Resource Description
-    Framework (RDF): Concepts and Abstract Syntax*. W3C Recommendation
-    10 February 2004
-    <http://www.w3.org/TR/rdf-concepts/](http://www.w3.org/TR/rdf-concepts/>
+-   Graham Klyne; Jeremy J. Carroll (editors): 
+    *Resource Description Framework (RDF): Concepts and Abstract Syntax*. 
+    W3C Recommendation, 10 February 2004
+    <http://www.w3.org/TR/rdf-concepts/>
 
--   Eric Prud’hommeaux; Gavin Carothers (editors): *Turtle. Terse RDF
-    Triple Language*. W3C Candidate Recommendation 19 February 2013.
-    <http://www.w3.org/TR/turtle/](http://www.w3.org/TR/turtle/>
+-   Eric Prud’hommeaux; Gavin Carothers (editors):
+    *Turtle. Terse RDF Triple Language*. 
+    W3C Candidate Recommendation, 19 February 2013.
+    <http://www.w3.org/TR/turtle/>
 
--   Manu Sporny; Gregg Kellogg; Markus Lanthaler (editors): *JSON-LD
-    1.0. A JSON-based Serialization for Linked Data*. W3C Candidate
-    Recommendation 10 September 2013.
-    <http://www.w3.org/TR/json-ld/](http://www.w3.org/TR/json-ld/>
+-   Manu Sporny; Gregg Kellogg; Markus Lanthaler (editors): 
+    *JSON-LD 1.0. A JSON-based Serialization for Linked Data*.
+    W3C Candidate Recommendation, 10 September 2013.
+    <http://www.w3.org/TR/json-ld/>
 
--   Talis (publisher): *RDF/JSON*.
-    <http://docs.api.talis.com/platform-api/output-types/rdf-json>
+-   Ian Davis; Thomas Steiner; Arnaud J Le Hors (editors):
+    *RDF 1.1 JSON Alternate Serialization (RDF/JSON)*.
+    W3C Working Group Note, 07 November 2013.
+    <http://www.w3.org/TR/rdf-json/>
 
--   *Uniform Resource Identifier (URI) Schemes*.
+-   Graham Klyne:
+    *Uniform Resource Identifier (URI) Schemes*.
+    IANA, 21 October 2013.
     <http://www.iana.org/assignments/uri-schemes/>
 
 -   *RDFa Core Initial Context. Vocabulary Prefixes*.
@@ -419,7 +424,7 @@ Sources: http://stats.lod2.eu/vocabularies, http://prefix.cc/popular/all.txt, ht
 
 [Turtle]: http://www.w3.org/TR/turtle/
 [JSON-LD]: http://json-ld.org/
-[RDF/JSON]: http://docs.api.talis.com/platform-api/output-types/rdf-json
+[RDF/JSON]: http://www.w3.org/TR/rdf-json/
 
 
 `examples.md`{.include}
