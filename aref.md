@@ -193,6 +193,8 @@ single “`^`” to serialize literal nodes with datatype.
 
 ## Blank nodes
 
+[*blank node identifier*]: #blank-nodes
+
 A *blank nodes* in aREF is encoded as string in form of a *blank node
 identifier* or by using a [*predicate map*] that either does not contain the
 special key "`_id`" or contains the special key "`_id`" mapped to a *blank node
@@ -216,46 +218,73 @@ identifier* is never referenced in the same RDF graph. In the simplest case, a
 
 An *RDF graph* in aREF is encoded as a [*list-map-structure*] that is: 
 
-* either a [*predicate map*] that MUST contain the special *key* "`_id`",
-* or a [*subject map*].
+* either a [*predicate map*] that MUST contain the special *key* "`_id`"
+  and MAY contain a [*namespace map*] with the special *key* "`_ns`". 
+* or a [*subject map*] that MAY contain a [*namespace map*] with the 
+  special *key* "`_ns`". 
 
-Both kinds of *maps* optionally contain a [*namespace map*].
-
-### Subject maps
-
-[*subject map*]: #subject-maps
-
-A *subject map* contains zero or more *subjects* as *keys*,
-similar to an *RDF graph* encoded in [RDF/JSON].
-
-A **subject map** is a *map* where
-
--   every key, expect the optional key “`_ns`”, is an [encoded IRI](#iris),
--   and every value is a non-empty [*predicate map*] that MUST NOT
-    contain the special *keys* “`_ns`” and `_id`”.
+A *map* that encodes an *RDF graph* is also called **root map**. In
+a recursive [*list-map-structure*] it is possible to select different
+*maps* as *root map* to encode the same *RDF graph*, but only one *map*
+MUST be selected at the same time and only this *map* MAY contain a
+[*namespace map*].
 
 ### Predicate maps
 
 [*predicate map*]: #predicate-maps
 
-A *predicate map* has a common *subject* (that can also be given implicitly)
-and a set of one ore more *predicates* as *keys*.  A *predicate map* is called
-**empty** if if does not contain any keys, not counting the special keys
-"`_ns`" and "`_id`". 
+A *predicate map* is a *map* with the following constraints:
 
-A **predicate map** is a *map* where every *key*, except the optional *keys*
-“`_ns`” and “`_id`”, is
+-   A *predicate map* MAY contain the special key "`_id`", mapped to
+    an encoded IRI (as [*absolute IRI*] or as [*prefixed name*]) or 
+    to a [*blank node identifier*]. This IRI 
+    encodes the *subject* of all *triples* encoded by the *predicate map*. 
+    If the key does not exist, the *subject* is either given because
+    the *predicate map* is used as part of a [*subject map*] or the 
+    IRI is a *blank node*.
 
--   either an IRI (as [*absolute IRI*] or as [*prefixed name*],
-    also possible with underscore alternative to colon),
--   or the string “`a`” as alias for the IRI
-    “`http://www.w3.org/1999/02/22-rdf-syntax-ns#type`”
+-   If a *predicate map* is used as *root map*, it MAY contain a 
+    [*namespace map*] with the special key "`_ns`".
 
-and every value of these *keys* is an [encoded object](#encoded-objects).
+-   Every *key*, except the optional special keys "`_id`" and "`_ns`"
+    MUST be either an encoded IRI or the string “`a`” as alias for 
+    the IRI "`http://www.w3.org/1999/02/22-rdf-syntax-ns#type`". These
+    IRIs encode the *predicates* of *triples* encoded by the *predicate map*.
 
-<!-- TODO: clean up rest of the document. -->
+-   Evey value of a *keys* that encodes a *predicate* must be an
+    [*encoded object*].
+
+***TODO**: allow underscores in a [*prefixed name*] and default namespaces only in keys of a predicate map?*
+
+### Subject maps
+
+[*subject map*]: #subject-maps
+
+A **subject map** is a *map* with the following constraints:
+
+-   If a *predicate map* is used as *root map*, it MAY contain a 
+    [*namespace map*] with the special key "`_ns`".
+
+-   Every other *key* is an encoded IRI (as [*absolute IRI*] or 
+    as [*prefixed name*]). These IRI are *subjects* of *triples*
+    encoded by the *subject map*.
+
+-   Every subject key is mapped to a [*predicate map*] with the
+    following constraints:
+
+    -   The predicate map SHOULD NOT contain the the special 
+        *key* "`_id`". If it contains this *key*, the *key*
+        MUST be mapped to an encoding of the same subject IRI.
+
+    -   The predicate map SHOULD NOT be empty, not counting 
+        the special *keys* "`_id`" and "`_ns`". 
+
+A *subject map* contains zero or more *subjects* as *keys*,
+similar to an *RDF graph* encoded in [RDF/JSON].
 
 ### Encoded objects
+
+[*encoded object*]: #encoded-objects
 
 An **encoded object** in aREF represents one or multiple *objects* of RDF
 *triples* with same *subject* and same *predicate*. An encoded object can be
@@ -285,11 +314,7 @@ called **namespace URI**. A *namespace map* can be specified both, explicitly
 with the special key "`_ns`" in a [*subject map*] or in a [*predicate map*],
 and implicitly by assuming a [predefined namespace map].
 
-Namespace maps SHOULD be given at the root *map* of an encoded *RDF graph*.
-Applications MAY ignore all occurrences of *namespace maps* but at the root.
-
-***TODO**: explain how mappings can be overriden. Explain use in recursive
-documents. Better limit `_ns` to one in an aREF document?*
+Namespace maps MUST be given at the *root map* of an encoded *RDF graph*.
 
 ### Predefined namespace maps
 
