@@ -357,7 +357,7 @@ Applications MAY predefine additional implicit namespace maps. Mappings in an
 explicit [*namespace map*] precedence over implicit mappings.
 
 ***TODO:** possibly add `dcat`, `prov`, `dbp`, `dbo`, `obo`, `rss`..., possibly remove `sioc`?
-Sources: http://stats.lod2.eu/vocabularies, http://prefix.cc/popular/all.txt ...*
+Sources: http://stats.lod2.eu/vocabularies, http://prefix.cc/popular/all.txt, http://www.w3.org/2011/rdfa-context/rdfa-1.1 ...*
 
 # References
 
@@ -405,8 +405,12 @@ Sources: http://stats.lod2.eu/vocabularies, http://prefix.cc/popular/all.txt ...
 -   Talis (publisher): *RDF/JSON*.
     <http://docs.api.talis.com/platform-api/output-types/rdf-json>
 
--   Uniform Resource Identifier (URI) Schemes.
+-   *Uniform Resource Identifier (URI) Schemes*.
     <http://www.iana.org/assignments/uri-schemes/>
+
+-   *RDFa Core Initial Context. Vocabulary Prefixes*.
+    <http://www.w3.org/2011/rdfa-context/rdfa-1.1>
+
 
 [RFC 3987]: http://tools.ietf.org/html/rfc3987
 [RFC 2119]: http://tools.ietf.org/html/rfc2119
