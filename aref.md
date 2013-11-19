@@ -106,6 +106,9 @@ or an IRI that also matches the syntax rule `plainIRI` but not the syntax rule
                         /* MUST also match IRI syntax rule from RFC 3987 */
                         /* MUST NOT match syntax rule literalNode */
 
+***TODO:** loose restriction for absolute IRIs as subject and as predicates
+because literals are not allwed at this place anyway*.
+
 ### Prefixed names
 
 [*prefixed name*]: #prefixed-names
@@ -114,6 +117,8 @@ A **prefixed name** consists of a **prefix** and a **name** separated by a
 colon (`:`) or by an underscore (`_`): 
 
       prefixedName  ::= prefix ( ":" | "_" ) name
+
+***TODO:** disallow underscore in an [*encoded object*]*
 
 The prefix is a string starting with a
 lowercase letter (`a-z`) optionally followed by a sequence of lowercase letters
@@ -157,8 +162,8 @@ A *simple literal* with datatype `http://www.w3.org/2001/XMLSchema#string` MAY
 be encoded as literal node with datatype or by appending an at sign (`@`) to
 the simple literal’s string. If the simple literal’s string neither ends with
 an at sign (`@`) nor matches to any of the syntax rules of [*absolute IRI*]
-(`absoluteIRI` or `plainIRI`), [*prefixed name*] (`prefixedName`) and
-[*identified blank node*] (`blankNode`), the string SHOULD be used as given. 
+(`absoluteIRI`), [*prefixed name*] (`prefixedName`) and [*identified blank
+node*] (`blankNode`), the string SHOULD be used as given. 
 
       plainLiteral   ::= string "@"
                          string
@@ -193,6 +198,7 @@ single “`^`” to serialize literal nodes with datatype.
 
 ## Blank nodes
 
+[*identified blank node*]: #blank-nodes
 [*blank node identifier*]: #blank-nodes
 
 A *blank nodes* in aREF is encoded as string in form of a *blank node
@@ -302,6 +308,8 @@ irrelevant. A list SHOULD NOT contain the same RDF object multiple times
 The object of a single RDF triple can be encoded both as string and as list of
 one string. The former form is RECOMMENDED but the latter form is possible as
 well, as known from [RDF/JSON].
+
+***TODO**: restrict encoding of IRI in contrast to IRI as subject or predicate.*
 
 ### Namespace maps
 
