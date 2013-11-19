@@ -276,14 +276,11 @@ A **subject map** is a *map* with the following constraints:
     encoded by the *subject map*.
 
 -   Every subject key is mapped to a [*predicate map*] with the
-    following constraints:
+    following constraint:
 
     -   The predicate map SHOULD NOT contain the the special 
         *key* "`_id`". If it contains this *key*, the *key*
         MUST be mapped to an encoding of the same subject IRI.
-
-    -   The predicate map SHOULD NOT be empty, not counting 
-        the special *keys* "`_id`" and "`_ns`". 
 
 A *subject map* contains zero or more *subjects* as *keys*,
 similar to an *RDF graph* encoded in [RDF/JSON].
@@ -299,7 +296,8 @@ any of:
 -   a IRI, encoded as [*absolute IRI*] or as [*prefixed name*],
 -   a [literal node](#literal-nodes), encoded as string,
 -   a [blank node](#blank-nodes), encoded as string,
--   a non-empty *list* of strings, each encoding an RDF *object*.
+-   a *list* with each element is a string encoding an RDF *object*
+    with any of the three methods above.
 
 A *list* represents a set of RDF objects, so the order of elements is
 irrelevant. A list SHOULD NOT contain the same RDF object multiple times
