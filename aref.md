@@ -433,6 +433,8 @@ Sources: http://stats.lod2.eu/vocabularies, http://prefix.cc/popular/all.txt, ht
 [RDF/JSON]: http://www.w3.org/TR/rdf-json/
 
 
+`decoding.md`{.include}
+
 `examples.md`{.include}
 
 `appendix.md`{.include}
