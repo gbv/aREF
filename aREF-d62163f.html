@@ -1,18 +1,10 @@
 <!DOCTYPE html>
-<<<<<<< HEAD
-<html>
-=======
 <html lang="de_DE:de:en_GB:en">
->>>>>>> 51c46c63bf1533024f6a69a2a4c18453ed989315
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="author" content="Jakob Voß (voss@gbv.de)" />
-<<<<<<< HEAD
-  <meta name="date" content="2013-11-27" />
-=======
   <meta name="date" content="2013-11-29" />
->>>>>>> 51c46c63bf1533024f6a69a2a4c18453ed989315
   <title>Another RDF Encoding Form (aREF)</title>
    <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -41,11 +33,7 @@
 <header>
 <h1 class="title">Another RDF Encoding Form (aREF)</h1>
 <h3 class="author">Jakob Voß (voss@gbv.de)</h3>
-<<<<<<< HEAD
-<h4 class="date">2013-11-27 (version 0.08)</h4>
-=======
 <h4 class="date">2013-11-29 (version 0.08rev4)</h4>
->>>>>>> 51c46c63bf1533024f6a69a2a4c18453ed989315
 </header>
 
 <h1>Table of Contents</h1>
@@ -81,9 +69,6 @@
 <li><a href="#other-references"><span class="toc-section-number">3.2</span> Other references</a></li>
 </ul></li>
 <li><a href="#aref-decoding-algorithm"><span class="toc-section-number">4</span> aREF decoding algorithm</a></li>
-<<<<<<< HEAD
-<li><a href="#examples"><span class="toc-section-number">5</span> Examples</a></li>
-=======
 <li><a href="#examples"><span class="toc-section-number">5</span> Examples</a><ul>
 <li><a href="#examples-in-different-serializations"><span class="toc-section-number">5.1</span> Examples in different serializations</a><ul>
 <li><a href="#yaml"><span class="toc-section-number">5.1.1</span> YAML</a></li>
@@ -94,7 +79,6 @@
 </ul></li>
 <li><a href="#examples-from-json-ld-specification"><span class="toc-section-number">5.2</span> Examples from JSON-LD specification</a></li>
 </ul></li>
->>>>>>> 51c46c63bf1533024f6a69a2a4c18453ed989315
 <li><a href="#appendix"><span class="toc-section-number">6</span> Appendix</a></li>
 </ul>
 </nav>
@@ -103,13 +87,8 @@
 <p>This document defines an encoding of <a href="#rdf-data"><em>RDF graphs</em></a> called <strong>another RDF encoding form (aREF)</strong>. The encoding combines and simplfies best parts of existing RDF serializations <a href="http://www.w3.org/TR/turtle/">Turtle</a>, <a href="http://json-ld.org/">JSON-LD</a>, and <a href="http://www.w3.org/TR/rdf-json/">RDF/JSON</a>. In contrast to these formats, RDF data in aREF is not serialized in form of a Unicode string but encoded in form of a <a href="#lists-map-structures"><em>list-map-structure</em></a>. Thus, aREF allows to express RDF graphs in different data structuring languages and type systems of programming languages.</p>
 <section class="level2" id="status-of-this-document">
 <a id="Status of this document"></a><h2><a href="#status-of-this-document"><span class="header-section-number">1.1</span> Status of this document</a></h2>
-<<<<<<< HEAD
-<p>This is version 0.08 of aREF specification, last modified at 2013-11-27 with commit <a href="https://github.com/gbv/aREF/commit/f5948f0f7526ca2077ed88d18c810e117e88f5dc">f5948f0</a>. The most recent version of this document is made available at <a href="http://gbv.github.io/aREF/">http://gbv.github.io/aREF/</a>.</p>
-<p>The specification of aREF is hosted in a public git repository at &lt;{GITHUB}&gt;, written in in <a href="http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html">Pandoc’s Markdown</a> and managed with <a href="https://github.com/jakobib/makespec">makespec</a>. Please add and comment on issues to this specification at <a href="https://github.com/gbv/aREF/issues">https://github.com/gbv/aREF/issues</a>.</p>
-=======
 <p>This is version 0.08rev4 of aREF specification, last modified at 2013-11-29 with commit <a href="https://github.com/gbv/aREF/commit/d62163f66bc7ee54117a7ce6044ac045899a6aa4">d62163f</a>. The most recent version of this document is made available at <a href="http://gbv.github.io/aREF/">http://gbv.github.io/aREF/</a>.</p>
 <p>The specification of aREF is hosted in a public git repository at <a href="https://github.com/gbv/aREF/">https://github.com/gbv/aREF/</a>, written in in <a href="http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html">Pandoc’s Markdown</a> and managed with <a href="https://github.com/jakobib/makespec">makespec</a>. Please add and comment on issues to this specification at <a href="https://github.com/gbv/aREF/issues">https://github.com/gbv/aREF/issues</a>.</p>
->>>>>>> 51c46c63bf1533024f6a69a2a4c18453ed989315
 </section>
 <section class="level2" id="terminology">
 <a id="Terminology"></a><h2><a href="#terminology"><span class="header-section-number">1.2</span> Terminology</a></h2>
@@ -133,14 +112,8 @@
 <li>A <strong>simple literal</strong> is a literal node with datatype <code>http://www.w3.org/2001/XMLSchema#string</code>.</li>
 <li>A <strong>datatype</strong> is an <em>IRI</em>.</li>
 <li>A <strong>language tag</strong> is a well-formed laguage tag as defined in <a href="http://tools.ietf.org/html/bcp47">BCP 47</a>.</li>
-<<<<<<< HEAD
-<li>A <strong>blank node</strong> is neither an <em>IRI</em> nor a <em>literal node</em>.</li>
-</ul>
-<p>This definition of RDF data neither includes relative IRIs nor blank node identifiers. When an <em>RDF graph</em> is encoded in aREF one can use <a href="#blank-nodes"><em>blank node identifiers</em></a> to refer to particular blank nodes within the scope of the same <em>RDF graph</em>.</p>
-=======
 </ul>
 <p>This definition of RDF data neither includes relative IRIs nor blank node identifiers. When an <em>RDF graph</em> is encoded in aREF one can use <a href="#blank-nodes"><em>blank node identifiers</em></a> to refer to particular blank nodes within the scope of the same <em>RDF graph</em>. RDF extensions such as named graphs, blank nodes as predicates, and literal nodes as subjects are not covered by this specification nor expressible in aREF.</p>
->>>>>>> 51c46c63bf1533024f6a69a2a4c18453ed989315
 </section>
 <section class="level2" id="lists-map-structures">
 <a id="Lists-map-structures"></a><h2><a href="#lists-map-structures"><span class="header-section-number">1.4</span> Lists-map-structures</a></h2>
@@ -576,9 +549,6 @@ function single_object( subject, predicate, object )
 </section>
 <section class="level1" id="examples">
 <h1><a href="#examples"><span class="header-section-number">5</span> Examples</a></h1>
-<<<<<<< HEAD
-<p>An aREF document can be expressed both in data structuring languages (JSON, YAML…) and in type systems of programming languages (Python, Ruby, Perl…).</p>
-=======
 <section class="level2" id="examples-in-different-serializations">
 <a id="Examples in different serializations"></a><h2><a href="#examples-in-different-serializations"><span class="header-section-number">5.1</span> Examples in different serializations</a></h2>
 <p>An aREF document can be expressed both in data structuring languages (JSON, YAML…) and in type systems of programming languages (Python, Ruby, Perl…).</p>
@@ -702,7 +672,6 @@ neighbor: _:1</code></pre>
 </section>
 <section class="level2" id="examples-from-json-ld-specification">
 <a id="Examples from JSON-LD specification"></a><h2><a href="#examples-from-json-ld-specification"><span class="header-section-number">5.2</span> Examples from JSON-LD specification</a></h2>
->>>>>>> 51c46c63bf1533024f6a69a2a4c18453ed989315
 <p>Example 1/2 from JSON-LD adopted as aRef in JSON or Python:</p>
 <pre><code>{
   &quot;schema:name&quot;: &quot;Manu Sporny&quot;,
@@ -816,10 +785,7 @@ foaf:depiction: http://twitter.com/account/profile_image/markuslanthaler</code><
 </tbody>
 </table>
 </section>
-<<<<<<< HEAD
-=======
 </section>
->>>>>>> 51c46c63bf1533024f6a69a2a4c18453ed989315
 <section class="level1" id="appendix">
 <h1><a href="#appendix"><span class="header-section-number">6</span> Appendix</a></h1>
 <p>IRI syntax as defined in <a href="http://tools.ietf.org/html/rfc3987">RFC 3987</a>:</p>

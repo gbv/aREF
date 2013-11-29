@@ -1,18 +1,10 @@
 <!DOCTYPE html>
-<<<<<<< HEAD
-<html>
-=======
 <html lang="de_DE:de:en_GB:en">
->>>>>>> 51c46c63bf1533024f6a69a2a4c18453ed989315
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="author" content="Jakob Voß (voss@gbv.de)" />
-<<<<<<< HEAD
-  <meta name="date" content="2013-11-27" />
-=======
-  <meta name="date" content="2013-11-29" />
->>>>>>> 51c46c63bf1533024f6a69a2a4c18453ed989315
+  <meta name="date" content="2013-11-15" />
   <title>Another RDF Encoding Form (aREF)</title>
    <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -41,11 +33,7 @@
 <header>
 <h1 class="title">Another RDF Encoding Form (aREF)</h1>
 <h3 class="author">Jakob Voß (voss@gbv.de)</h3>
-<<<<<<< HEAD
-<h4 class="date">2013-11-27 (version 0.08)</h4>
-=======
-<h4 class="date">2013-11-29 (version 0.08rev4)</h4>
->>>>>>> 51c46c63bf1533024f6a69a2a4c18453ed989315
+<h4 class="date">2013-11-15 (version 0.04)</h4>
 </header>
 
 <h1>Table of Contents</h1>
@@ -69,8 +57,8 @@
 </ul></li>
 <li><a href="#blank-nodes"><span class="toc-section-number">2.3</span> Blank nodes</a></li>
 <li><a href="#graphs"><span class="toc-section-number">2.4</span> Graphs</a><ul>
-<li><a href="#predicate-maps"><span class="toc-section-number">2.4.1</span> Predicate maps</a></li>
-<li><a href="#subject-maps"><span class="toc-section-number">2.4.2</span> Subject maps</a></li>
+<li><a href="#subject-maps"><span class="toc-section-number">2.4.1</span> Subject maps</a></li>
+<li><a href="#predicate-maps"><span class="toc-section-number">2.4.2</span> Predicate maps</a></li>
 <li><a href="#encoded-objects"><span class="toc-section-number">2.4.3</span> Encoded objects</a></li>
 <li><a href="#namespace-maps"><span class="toc-section-number">2.4.4</span> Namespace maps</a></li>
 <li><a href="#predefined-namespace-maps"><span class="toc-section-number">2.4.5</span> Predefined namespace maps</a></li>
@@ -80,36 +68,17 @@
 <li><a href="#normative-references"><span class="toc-section-number">3.1</span> Normative references</a></li>
 <li><a href="#other-references"><span class="toc-section-number">3.2</span> Other references</a></li>
 </ul></li>
-<li><a href="#aref-decoding-algorithm"><span class="toc-section-number">4</span> aREF decoding algorithm</a></li>
-<<<<<<< HEAD
-<li><a href="#examples"><span class="toc-section-number">5</span> Examples</a></li>
-=======
-<li><a href="#examples"><span class="toc-section-number">5</span> Examples</a><ul>
-<li><a href="#examples-in-different-serializations"><span class="toc-section-number">5.1</span> Examples in different serializations</a><ul>
-<li><a href="#yaml"><span class="toc-section-number">5.1.1</span> YAML</a></li>
-<li><a href="#json"><span class="toc-section-number">5.1.2</span> JSON</a></li>
-<li><a href="#javascript"><span class="toc-section-number">5.1.3</span> JavaScript</a></li>
-<li><a href="#perl"><span class="toc-section-number">5.1.4</span> Perl</a></li>
-<li><a href="#php"><span class="toc-section-number">5.1.5</span> PHP</a></li>
-</ul></li>
-<li><a href="#examples-from-json-ld-specification"><span class="toc-section-number">5.2</span> Examples from JSON-LD specification</a></li>
-</ul></li>
->>>>>>> 51c46c63bf1533024f6a69a2a4c18453ed989315
-<li><a href="#appendix"><span class="toc-section-number">6</span> Appendix</a></li>
+<li><a href="#examples"><span class="toc-section-number">4</span> Examples</a></li>
+<li><a href="#appendix"><span class="toc-section-number">5</span> Appendix</a></li>
 </ul>
 </nav>
 <section class="level1" id="introduction">
 <h1><a href="#introduction"><span class="header-section-number">1</span> Introduction</a></h1>
-<p>This document defines an encoding of <a href="#rdf-data"><em>RDF graphs</em></a> called <strong>another RDF encoding form (aREF)</strong>. The encoding combines and simplfies best parts of existing RDF serializations <a href="http://www.w3.org/TR/turtle/">Turtle</a>, <a href="http://json-ld.org/">JSON-LD</a>, and <a href="http://www.w3.org/TR/rdf-json/">RDF/JSON</a>. In contrast to these formats, RDF data in aREF is not serialized in form of a Unicode string but encoded in form of a <a href="#lists-map-structures"><em>list-map-structure</em></a>. Thus, aREF allows to express RDF graphs in different data structuring languages and type systems of programming languages.</p>
+<p>This document defines an encoding of <a href="#rdf-data"><em>RDF graphs</em></a> called <strong>another RDF encoding form (aREF)</strong>. The encoding combines and simplfies best parts of existing RDF serializations <a href="http://www.w3.org/TR/turtle/">Turtle</a>, <a href="http://json-ld.org/">JSON-LD</a>, and <a href="http://docs.api.talis.com/platform-api/output-types/rdf-json">RDF/JSON</a>. In contrast to these formats, RDF data in aREF is not serialized in form of a Unicode string but encoded in form of a <a href="#lists-map-structures"><em>list-map-structure</em></a>. Thus, aREF allows to express RDF graphs in different data structuring languages and type systems of programming languages.</p>
 <section class="level2" id="status-of-this-document">
 <a id="Status of this document"></a><h2><a href="#status-of-this-document"><span class="header-section-number">1.1</span> Status of this document</a></h2>
-<<<<<<< HEAD
-<p>This is version 0.08 of aREF specification, last modified at 2013-11-27 with commit <a href="https://github.com/gbv/aREF/commit/f5948f0f7526ca2077ed88d18c810e117e88f5dc">f5948f0</a>. The most recent version of this document is made available at <a href="http://gbv.github.io/aREF/">http://gbv.github.io/aREF/</a>.</p>
-<p>The specification of aREF is hosted in a public git repository at &lt;{GITHUB}&gt;, written in in <a href="http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html">Pandoc’s Markdown</a> and managed with <a href="https://github.com/jakobib/makespec">makespec</a>. Please add and comment on issues to this specification at <a href="https://github.com/gbv/aREF/issues">https://github.com/gbv/aREF/issues</a>.</p>
-=======
-<p>This is version 0.08rev4 of aREF specification, last modified at 2013-11-29 with commit <a href="https://github.com/gbv/aREF/commit/d62163f66bc7ee54117a7ce6044ac045899a6aa4">d62163f</a>. The most recent version of this document is made available at <a href="http://gbv.github.io/aREF/">http://gbv.github.io/aREF/</a>.</p>
+<p>This is version 0.04 of aREF specification, last modified at 2013-11-15 with commit <a href="https://github.com/gbv/aREF/commit/249143ff7e9c49120c5fa07471e66078dab36b50">249143f</a>. The most recent version of this document is made available at <a href="http://gbv.github.io/aREF/">http://gbv.github.io/aREF/</a>.</p>
 <p>The specification of aREF is hosted in a public git repository at <a href="https://github.com/gbv/aREF/">https://github.com/gbv/aREF/</a>, written in in <a href="http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html">Pandoc’s Markdown</a> and managed with <a href="https://github.com/jakobib/makespec">makespec</a>. Please add and comment on issues to this specification at <a href="https://github.com/gbv/aREF/issues">https://github.com/gbv/aREF/issues</a>.</p>
->>>>>>> 51c46c63bf1533024f6a69a2a4c18453ed989315
 </section>
 <section class="level2" id="terminology">
 <a id="Terminology"></a><h2><a href="#terminology"><span class="header-section-number">1.2</span> Terminology</a></h2>
@@ -133,14 +102,9 @@
 <li>A <strong>simple literal</strong> is a literal node with datatype <code>http://www.w3.org/2001/XMLSchema#string</code>.</li>
 <li>A <strong>datatype</strong> is an <em>IRI</em>.</li>
 <li>A <strong>language tag</strong> is a well-formed laguage tag as defined in <a href="http://tools.ietf.org/html/bcp47">BCP 47</a>.</li>
-<<<<<<< HEAD
 <li>A <strong>blank node</strong> is neither an <em>IRI</em> nor a <em>literal node</em>.</li>
 </ul>
 <p>This definition of RDF data neither includes relative IRIs nor blank node identifiers. When an <em>RDF graph</em> is encoded in aREF one can use <a href="#blank-nodes"><em>blank node identifiers</em></a> to refer to particular blank nodes within the scope of the same <em>RDF graph</em>.</p>
-=======
-</ul>
-<p>This definition of RDF data neither includes relative IRIs nor blank node identifiers. When an <em>RDF graph</em> is encoded in aREF one can use <a href="#blank-nodes"><em>blank node identifiers</em></a> to refer to particular blank nodes within the scope of the same <em>RDF graph</em>. RDF extensions such as named graphs, blank nodes as predicates, and literal nodes as subjects are not covered by this specification nor expressible in aREF.</p>
->>>>>>> 51c46c63bf1533024f6a69a2a4c18453ed989315
 </section>
 <section class="level2" id="lists-map-structures">
 <a id="Lists-map-structures"></a><h2><a href="#lists-map-structures"><span class="header-section-number">1.4</span> Lists-map-structures</a></h2>
@@ -167,13 +131,11 @@
   plainIRI      ::= [a-z] ( [a-z] | [0-9] | &quot;+&quot; | &quot;.&quot; | &quot;-&quot; )* &quot;:&quot; string?
                     /* MUST also match IRI syntax rule from RFC 3987 */
                     /* MUST NOT match syntax rule literalNode */</code></pre>
-<p><em><strong>TODO:</strong> loose restriction for absolute IRIs as subject and as predicates because literals are not allwed at this place anyway</em>.</p>
 </section>
 <section class="level3" id="prefixed-names">
 <h3><a href="#prefixed-names"><span class="header-section-number">2.1.2</span> Prefixed names</a></h3>
 <p>A <strong>prefixed name</strong> consists of a <strong>prefix</strong> and a <strong>name</strong> separated by a colon (<code>:</code>) or by an underscore (<code>_</code>):</p>
 <pre><code>  prefixedName  ::= prefix ( &quot;:&quot; | &quot;_&quot; ) name</code></pre>
-<p><em><strong>TODO:</strong> disallow underscore in an <a href="#encoded-objects"><em>encoded object</em></a></em></p>
 <p>The prefix is a string starting with a lowercase letter (<code>a-z</code>) optionally followed by a sequence of lowercase letters and digits (<code>0-9</code>).</p>
 <pre><code>  prefix        ::= [a-z] ( [a-z] | [0-9] )*</code></pre>
 <p>A name is a string that is either empty or conforms to the following syntax:</p>
@@ -198,7 +160,7 @@
 <pre><code>  literalNode   ::= plainLiteral | languageString | datatypeString</code></pre>
 <section class="level3" id="simple-literals">
 <h3><a href="#simple-literals"><span class="header-section-number">2.2.1</span> Simple literals</a></h3>
-<p>A <em>simple literal</em> with datatype <code>http://www.w3.org/2001/XMLSchema#string</code> MAY be encoded as literal node with datatype or by appending an at sign (<code>@</code>) to the simple literal’s string. If the simple literal’s string neither ends with an at sign (<code>@</code>) nor matches to any of the syntax rules of <a href="#absolute-iris"><em>absolute IRI</em></a> (<code>absoluteIRI</code>), <a href="#prefixed-names"><em>prefixed name</em></a> (<code>prefixedName</code>) and <a href="#blank-nodes"><em>identified blank node</em></a> (<code>blankNode</code>), the string SHOULD be used as given.</p>
+<p>A <em>simple literal</em> with datatype <code>http://www.w3.org/2001/XMLSchema#string</code> MAY be encoded as literal node with datatype or by appending an at sign (<code>@</code>) to the simple literal’s string. If the simple literal’s string neither ends with an at sign (<code>@</code>) nor matches to any of the syntax rules of <a href="#absolute-iris"><em>absolute IRI</em></a> (<code>absoluteIRI</code> or <code>plainIRI</code>), <a href="#prefixed-names"><em>prefixed name</em></a> (<code>prefixedName</code>) and [<em>identified blank node</em>] (<code>blankNode</code>), the string SHOULD be used as given.</p>
 <pre><code>  plainLiteral   ::= string &quot;@&quot;
                      string
                      /* MUST NOT end with &quot;@&quot; */
@@ -231,33 +193,30 @@
 <a id="Graphs"></a><h2><a href="#graphs"><span class="header-section-number">2.4</span> Graphs</a></h2>
 <p>An <em>RDF graph</em> in aREF is encoded as a <a href="#lists-map-structures"><em>list-map-structure</em></a> that is:</p>
 <ul>
-<li>either a <a href="#predicate-maps"><em>predicate map</em></a> that MUST contain the special <em>key</em> “<code>_id</code>” and MAY contain a <a href="#namespace-maps"><em>namespace map</em></a> with the special <em>key</em> “<code>_ns</code>”.</li>
-<li>or a <a href="#subject-maps"><em>subject map</em></a> that MAY contain a <a href="#namespace-maps"><em>namespace map</em></a> with the special <em>key</em> “<code>_ns</code>”.</li>
+<li>either a <a href="#predicate-maps"><em>predicate map</em></a> that MUST contain the special <em>key</em> “<code>_id</code>”,</li>
+<li>or a <a href="#subject-maps"><em>subject map</em></a>.</li>
 </ul>
-<p>A <em>map</em> that encodes an <em>RDF graph</em> is also called <strong>root map</strong>. In a recursive <a href="#lists-map-structures"><em>list-map-structure</em></a> it is possible to select different <em>maps</em> as <em>root map</em> to encode the same <em>RDF graph</em>, but only one <em>map</em> MUST be selected at the same time and only this <em>map</em> MAY contain a <a href="#namespace-maps"><em>namespace map</em></a>.</p>
-<section class="level3" id="predicate-maps">
-<h3><a href="#predicate-maps"><span class="header-section-number">2.4.1</span> Predicate maps</a></h3>
-<p>A <em>predicate map</em> is a <em>map</em> with the following constraints:</p>
-<ul>
-<li><p>A <em>predicate map</em> MAY contain the special key “<code>_id</code>”, mapped to an encoded IRI (as <a href="#absolute-iris"><em>absolute IRI</em></a> or as <a href="#prefixed-names"><em>prefixed name</em></a>) or to a <a href="#blank-nodes"><em>blank node identifier</em></a>. This IRI encodes the <em>subject</em> of all <em>triples</em> encoded by the <em>predicate map</em>. If the key does not exist, the <em>subject</em> is either given because the <em>predicate map</em> is used as part of a <a href="#subject-maps"><em>subject map</em></a> or the IRI is a <em>blank node</em>.</p></li>
-<li><p>If a <em>predicate map</em> is used as <em>root map</em>, it MAY contain a <a href="#namespace-maps"><em>namespace map</em></a> with the special key “<code>_ns</code>”.</p></li>
-<li><p>Every <em>key</em>, except the optional special keys “<code>_id</code>” and “<code>_ns</code>” MUST be either an encoded IRI or the string “<code>a</code>” as alias for the IRI “<code>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</code>”. These IRIs encode the <em>predicates</em> of <em>triples</em> encoded by the <em>predicate map</em>.</p></li>
-<li><p>Evey value of a <em>keys</em> that encodes a <em>predicate</em> must be an <a href="#encoded-objects"><em>encoded object</em></a>.</p></li>
-</ul>
-<p><em><strong>TODO</strong>: allow underscores in a <a href="#prefixed-names"><em>prefixed name</em></a> and default namespaces only in keys of a predicate map?</em></p>
-</section>
+<p>Both kinds of <em>maps</em> optionally contain a <a href="#namespace-maps"><em>namespace map</em></a>.</p>
 <section class="level3" id="subject-maps">
-<h3><a href="#subject-maps"><span class="header-section-number">2.4.2</span> Subject maps</a></h3>
-<p>A <strong>subject map</strong> is a <em>map</em> with the following constraints:</p>
+<h3><a href="#subject-maps"><span class="header-section-number">2.4.1</span> Subject maps</a></h3>
+<p>A <em>subject map</em> contains zero or more <em>subjects</em> as <em>keys</em>, similar to an <em>RDF graph</em> encoded in <a href="http://docs.api.talis.com/platform-api/output-types/rdf-json">RDF/JSON</a>.</p>
+<p>A <strong>subject map</strong> is a <em>map</em> where</p>
 <ul>
-<li><p>If a <em>predicate map</em> is used as <em>root map</em>, it MAY contain a <a href="#namespace-maps"><em>namespace map</em></a> with the special key “<code>_ns</code>”.</p></li>
-<li><p>Every other <em>key</em> is an encoded IRI (as <a href="#absolute-iris"><em>absolute IRI</em></a> or as <a href="#prefixed-names"><em>prefixed name</em></a>). These IRI are <em>subjects</em> of <em>triples</em> encoded by the <em>subject map</em>.</p></li>
-<li><p>Every subject key is mapped to a <a href="#predicate-maps"><em>predicate map</em></a> with the following constraint:</p>
-<ul>
-<li>The predicate map SHOULD NOT contain the the special <em>key</em> “<code>_id</code>”. If it contains this <em>key</em>, the <em>key</em> MUST be mapped to an encoding of the same subject IRI.</li>
-</ul></li>
+<li>every key, expect the optional key “<code>_ns</code>”, is an <a href="#iris">encoded IRI</a>,</li>
+<li>and every value is a non-empty <a href="#predicate-maps"><em>predicate map</em></a> that MUST NOT contain the special <em>keys</em> “<code>_ns</code>” and <code>_id</code>”.</li>
 </ul>
-<p>A <em>subject map</em> contains zero or more <em>subjects</em> as <em>keys</em>, similar to an <em>RDF graph</em> encoded in <a href="http://www.w3.org/TR/rdf-json/">RDF/JSON</a>.</p>
+</section>
+<section class="level3" id="predicate-maps">
+<h3><a href="#predicate-maps"><span class="header-section-number">2.4.2</span> Predicate maps</a></h3>
+<p>A <em>predicate map</em> has a common <em>subject</em> (that can also be given implicitly) and a set of one ore more <em>predicates</em> as <em>keys</em>. A <em>predicate map</em> is called <strong>empty</strong> if if does not contain any keys, not counting the special keys “<code>_ns</code>” and “<code>_id</code>”.</p>
+<p>A <strong>predicate map</strong> is a <em>map</em> where every <em>key</em>, except the optional <em>keys</em> “<code>_ns</code>” and “<code>_id</code>”, is</p>
+<ul>
+<li>either an IRI (as <a href="#absolute-iris"><em>absolute IRI</em></a> or as <a href="#prefixed-names"><em>prefixed name</em></a>, also possible with underscore alternative to colon),</li>
+<li>or the string “<code>a</code>” as alias for the IRI “<code>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</code>”</li>
+</ul>
+<p>and every value of these <em>keys</em> is an <a href="#encoded-objects">encoded object</a>.</p>
+<!-- TODO: clean up rest of the document. -->
+
 </section>
 <section class="level3" id="encoded-objects">
 <h3><a href="#encoded-objects"><span class="header-section-number">2.4.3</span> Encoded objects</a></h3>
@@ -266,16 +225,16 @@
 <li>a IRI, encoded as <a href="#absolute-iris"><em>absolute IRI</em></a> or as <a href="#prefixed-names"><em>prefixed name</em></a>,</li>
 <li>a <a href="#literal-nodes">literal node</a>, encoded as string,</li>
 <li>a <a href="#blank-nodes">blank node</a>, encoded as string,</li>
-<li>a <em>list</em> with each element is a string encoding an RDF <em>object</em> with any of the three methods above.</li>
+<li>a non-empty <em>list</em> of strings, each encoding an RDF <em>object</em>.</li>
 </ul>
 <p>A <em>list</em> represents a set of RDF objects, so the order of elements is irrelevant. A list SHOULD NOT contain the same RDF object multiple times (as same string or in different encoding forms).</p>
-<p>The object of a single RDF triple can be encoded both as string and as list of one string. The former form is RECOMMENDED but the latter form is possible as well, as known from <a href="http://www.w3.org/TR/rdf-json/">RDF/JSON</a>.</p>
-<p><em><strong>TODO</strong>: restrict encoding of IRI in contrast to IRI as subject or predicate.</em></p>
+<p>The object of a single RDF triple can be encoded both as string and as list of one string. The former form is RECOMMENDED but the latter form is possible as well, as known from <a href="http://docs.api.talis.com/platform-api/output-types/rdf-json">RDF/JSON</a>.</p>
 </section>
 <section class="level3" id="namespace-maps">
 <h3><a href="#namespace-maps"><span class="header-section-number">2.4.4</span> Namespace maps</a></h3>
 <p>A <strong>namespace map</strong> in aREF is a <em>map</em> where every <em>key</em> conforms to the <code>prefix</code> syntax rule (see <a href="#prefixed-names"><em>prefixed name</em></a>) and is mapped to an IRI, given as string that conforms to the <code>IRI</code> syntax rule from <a href="http://tools.ietf.org/html/rfc3987">RFC 3987</a>. The IRI is called <strong>namespace URI</strong>. A <em>namespace map</em> can be specified both, explicitly with the special key “<code>_ns</code>” in a <a href="#subject-maps"><em>subject map</em></a> or in a <a href="#predicate-maps"><em>predicate map</em></a>, and implicitly by assuming a <a href="#predefined-namespace-maps">predefined namespace map</a>.</p>
-<p>Namespace maps MUST be given at the <em>root map</em> of an encoded <em>RDF graph</em>.</p>
+<p>Namespace maps SHOULD be given at the root <em>map</em> of an encoded <em>RDF graph</em>. Applications MAY ignore all occurrences of <em>namespace maps</em> but at the root.</p>
+<p><em><strong>TODO</strong>: explain how mappings can be overriden. Explain use in recursive documents. Better limit <code>_ns</code> to one in an aREF document?</em></p>
 </section>
 <section class="level3" id="predefined-namespace-maps">
 <h3><a href="#predefined-namespace-maps"><span class="header-section-number">2.4.5</span> Predefined namespace maps</a></h3>
@@ -404,7 +363,7 @@
 </tbody>
 </table>
 <p>Applications MAY predefine additional implicit namespace maps. Mappings in an explicit <a href="#namespace-maps"><em>namespace map</em></a> precedence over implicit mappings.</p>
-<p><em><strong>TODO:</strong> possibly add <code>dcat</code>, <code>prov</code>, <code>dbp</code>, <code>dbo</code>, <code>obo</code>, <code>rss</code>…, possibly remove <code>sioc</code>? Sources: http://stats.lod2.eu/vocabularies, http://prefix.cc/popular/all.txt, http://www.w3.org/2011/rdfa-context/rdfa-1.1 …</em></p>
+<p><em><strong>TODO:</strong> possibly add <code>dcat</code>, <code>prov</code>, <code>dbp</code>, <code>dbo</code>, <code>obo</code>, <code>rss</code>…, possibly remove <code>sioc</code>? Sources: http://stats.lod2.eu/vocabularies, http://prefix.cc/popular/all.txt …</em></p>
 </section>
 </section>
 </section>
@@ -426,283 +385,17 @@
 <section class="level2" id="other-references">
 <a id="Other references"></a><h2><a href="#other-references"><span class="header-section-number">3.2</span> Other references</a></h2>
 <ul>
-<li><p>Graham Klyne; Jeremy J. Carroll (editors): <em>Resource Description Framework (RDF): Concepts and Abstract Syntax</em>. W3C Recommendation, 10 February 2004 <a href="http://www.w3.org/TR/rdf-concepts/">http://www.w3.org/TR/rdf-concepts/</a></p></li>
-<li><p>Eric Prud’hommeaux; Gavin Carothers (editors): <em>Turtle. Terse RDF Triple Language</em>. W3C Candidate Recommendation, 19 February 2013. <a href="http://www.w3.org/TR/turtle/">http://www.w3.org/TR/turtle/</a></p></li>
-<li><p>Manu Sporny; Gregg Kellogg; Markus Lanthaler (editors): <em>JSON-LD 1.0. A JSON-based Serialization for Linked Data</em>. W3C Candidate Recommendation, 10 September 2013. <a href="http://www.w3.org/TR/json-ld/">http://www.w3.org/TR/json-ld/</a></p></li>
-<li><p>Ian Davis; Thomas Steiner; Arnaud J Le Hors (editors): <em>RDF 1.1 JSON Alternate Serialization (RDF/JSON)</em>. W3C Working Group Note, 07 November 2013. <a href="http://www.w3.org/TR/rdf-json/">http://www.w3.org/TR/rdf-json/</a></p></li>
-<li><p>Graham Klyne: <em>Uniform Resource Identifier (URI) Schemes</em>. IANA, 21 October 2013. <a href="http://www.iana.org/assignments/uri-schemes/">http://www.iana.org/assignments/uri-schemes/</a></p></li>
-<li><p><em>RDFa Core Initial Context. Vocabulary Prefixes</em>. <a href="http://www.w3.org/2011/rdfa-context/rdfa-1.1">http://www.w3.org/2011/rdfa-context/rdfa-1.1</a></p></li>
+<li><p>Graham Klyne; Jeremy J. Carroll (editors): <em>Resource Description Framework (RDF): Concepts and Abstract Syntax</em>. W3C Recommendation 10 February 2004 <http://www.w3.org/TR/rdf-concepts/](http://www.w3.org/TR/rdf-concepts/></p></li>
+<li><p>Eric Prud’hommeaux; Gavin Carothers (editors): <em>Turtle. Terse RDF Triple Language</em>. W3C Candidate Recommendation 19 February 2013. <http://www.w3.org/TR/turtle/](http://www.w3.org/TR/turtle/></p></li>
+<li><p>Manu Sporny; Gregg Kellogg; Markus Lanthaler (editors): <em>JSON-LD 1.0. A JSON-based Serialization for Linked Data</em>. W3C Candidate Recommendation 10 September 2013. <http://www.w3.org/TR/json-ld/](http://www.w3.org/TR/json-ld/></p></li>
+<li><p>Talis (publisher): <em>RDF/JSON</em>. <a href="http://docs.api.talis.com/platform-api/output-types/rdf-json">http://docs.api.talis.com/platform-api/output-types/rdf-json</a></p></li>
+<li><p>Uniform Resource Identifier (URI) Schemes. <a href="http://www.iana.org/assignments/uri-schemes/">http://www.iana.org/assignments/uri-schemes/</a></p></li>
 </ul>
 </section>
 </section>
-<section class="level1" id="aref-decoding-algorithm">
-<h1><a href="#aref-decoding-algorithm"><span class="header-section-number">4</span> aREF decoding algorithm</a></h1>
-<p><em>this section ins non-normative. It may reflect a different version of aREF and may contain errors!</em></p>
-<pre><code>regexp PREFIX   = /^[a-z]([a-z]|[0-9])*$/
-regexp IRI_LIKE = /^[a-z]([a-z]|[0-9]|+|\.|-)*:.*$/
-regexp NAME     = ... /* see specification */
-regexp IRI      = ... /* see RFC 3987 */
-
-global namespaces   /* predefined namespace map */
-global visted       /* track recursive structures */
-
-function decode( map )
-    namespaces = predefined_namespace
-    namespace_map( map[&quot;_ns&quot;] )
-    visted = { map: true }
-    if map[&quot;_id&quot;]
-        subject = iri_or_blank( map[&quot;_id&quot;] )
-        predicate_map( subject, map )
-    else
-        foreach key in map except &quot;_ns&quot;
-            subject = iri_or_blank(key)
-            predicates = map[key]
-            if predicates[&quot;_id&quot;] and iri_or_blank( predicates[&quot;id&quot;] ) != subject
-                error &quot;inconsistent _id&quot;
-            else
-                predicate_map( subject, predicates )
-
-function namespace_map( ns )
-    if is_string(ns)
-        namespaces[&quot;&quot;] = ns[key]
-    else if is_map(ns)
-        foreach key in ns 
-            if key matches PREFIX and ns[key] matches IRI_LIKE
-                if key == &quot;_&quot;
-                    prefix = &quot;&quot;
-                else
-                    prefix = key
-                namespaces[prefix] = ns[key]
-
-function predicate_map( subject, map )
-    if subject and is_map(map)
-        foreach key in map except &quot;_id&quot; or &quot;_ns&quot;
-            if key == &quot;a&quot;
-                predicate = &quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&quot;
-            else
-                predicate = iri_or_blank(key)
-                if predicate
-                    next key
-            object( subject, predicate, map[key] )
-
-function iri_or_blank( string )
-    if string matches /^&lt;(.+)&gt;$/
-        if $1 matches IRI
-            return $1
-    else if string matches /^_:([a-z]|[A-Z]|[0-9])+$/
-        return blank_node($1)
-    else if string matches /^((PREFIX)?[:_])?(NAME)$/
-        prefix = $1
-        if namespaces[prefix]
-            return concat(namespaces[prefix],$3)
-    else if string matches IRI_LIKE
-        if string matches IRI
-            return string
-    error &quot;invalid IRI&quot;
-    return false
-
-function blank_node( identifier )
-    ... /* return a blank node with given identifier or new identifier */
-
-function literal_node( string, language, datatype,  )
-    if not language and not datatype
-        datatype = &quot;http://www.w3.org/2001/XMLSchema#string&quot;
-    ... /* return a literal node, optionally with language or datatype */
-
-function objects( subject, predicate, object )
-    if is_array(object)
-        foreach obj in object
-            single_object( subject, predicate, obj )
-    else
-        single_object( subject, predicate, obj )
-
-function single_object( subject, predicate, object )
-    if is_map( object )
-        if object[&quot;_id&quot;]
-            object_node = iri_or_blank(object[&quot;_id&quot;])
-            if not object_node
-                return
-        else 
-            object_node = blank_node()
-
-        triple( subject, predicate, object_node )
-
-        if not visited[object]
-            visited[object] = true
-            predicate_map( object_node, object )
-    else
-        if object matches /^&lt;(.+)&gt;$/
-            if $1 matches IRI
-                object_node = $1
-            else
-                error &quot;invalid IRI&quot;
-                return
-        else if string matches /^_:([a-z]|[A-Z]|[0-9])+$/
-            object_node = blank_node($1)
-        else if string matches /^(PREFIX)?:(NAME)$/
-            prefix = $1
-            if namespaces[prefix]
-                object_node = concat(namespaces[prefix],$3)
-            else
-                error &quot;unknown prefix&quot;
-                return
-        else if object matches /^(.*)@([a-z]{2,8}(-[a-z0-9]{1,8})*)$/
-            object_node = literal_node( $1, $2 )
-        else if string matches /^(.*?)^^?(PREFIX)?:(NAME)$/
-            prefix = $1
-            if namespaces[prefix]
-                datatype = concat(namespaces[prefix],$3)
-                object_node = literal_node( $1, false, datatype )
-            else
-                error &quot;unknown prefix in datatype&quot;
-                return
-        else if string matches /^(.*?)^^?&lt;(IRI_LIKE)&gt;$/
-            if $2 matches IRI
-                datatype = $2
-                object_node = literal_node( $1, false, datatype )
-            else
-                error &quot;invalid datatype IRI&quot;
-                return
-        else if string matches IRI_LIKE
-            if object matches IRI
-                object_node = object
-            else
-                error &quot;invalid IRI&quot;
-                return
-        else 
-            object_node = literal_node( object )
-
-        triple( subject, predicate, object_node )</code></pre>
-</section>
 <section class="level1" id="examples">
-<h1><a href="#examples"><span class="header-section-number">5</span> Examples</a></h1>
-<<<<<<< HEAD
+<h1><a href="#examples"><span class="header-section-number">4</span> Examples</a></h1>
 <p>An aREF document can be expressed both in data structuring languages (JSON, YAML…) and in type systems of programming languages (Python, Ruby, Perl…).</p>
-=======
-<section class="level2" id="examples-in-different-serializations">
-<a id="Examples in different serializations"></a><h2><a href="#examples-in-different-serializations"><span class="header-section-number">5.1</span> Examples in different serializations</a></h2>
-<p>An aREF document can be expressed both in data structuring languages (JSON, YAML…) and in type systems of programming languages (Python, Ruby, Perl…).</p>
-<p>The following examples express the same aREF document in different languages. The namespace map could also be abbreviated to just the simple string <code>&quot;http://example.org/ontology/&quot;</code> for the default namespace.</p>
-<section class="level3" id="yaml">
-<h3><a href="#yaml"><span class="header-section-number">5.1.1</span> YAML</a></h3>
-<p>The most condensed readable serialization of aREF is probably possible in <strong>YAML</strong>:</p>
-<pre><code>---
-_ns: 
-    _:   http://example.org/ontology/
-    dct: http://purl.org/dc/terms/
-_id: http://example.com/people#alice
-a: foaf:Person
-foaf:name: Alice Smith
-foaf:age: 42^xsd:integer 
-foaf:homepage: 
-    - http://personal.example.org/~alice/ 
-    - http://work.example.com/asmith/ 
-foaf:knows:
-    _id: _:1
-    foaf:name: John
-    dct:description: a nice guy@en
-neighbor: _:1</code></pre>
-</section>
-<section class="level3" id="json">
-<h3><a href="#json"><span class="header-section-number">5.1.2</span> JSON</a></h3>
-<p>The same in <strong>JSON</strong> requires more brackets and delimiters:</p>
-<pre><code>{ 
-    &#39;_ns&#39;: { 
-        &#39;_&#39;: &#39;http://example.org/ontology/&#39;,
-        &#39;dct&#39;: &#39;http://purl.org/dc/terms/&#39;
-    },
-    &#39;_id&#39;: &#39;http://example.com/people#alice&#39;,
-    &#39;a&#39;: &#39;foaf:Person&#39;,
-    &#39;foaf:name&#39;: &#39;Alice Smisth&#39;,
-    &#39;foaf:age&#39;: &#39;42^xsd:integer&#39;,
-    &#39;foaf:homepage&#39;: [
-       &#39;http://personal.example.org/~alice/&#39;,
-       &#39;http://work.example.com/asmith/&#39; 
-    ],
-    &#39;foaf:knows&#39;: { 
-        _id: &#39;_:1&#39;,
-        &#39;foaf:name&#39;: &#39;John&#39;,
-        &#39;dct:description&#39;: &#39;a nice guy@en&#39; 
-    },
-    &#39;neighbor&#39;: &#39;_:1&#39; 
-}</code></pre>
-</section>
-<section class="level3" id="javascript">
-<h3><a href="#javascript"><span class="header-section-number">5.1.3</span> JavaScript</a></h3>
-<p>In <strong>JavaScript</strong> one can omit quotes around map keys by using underscores for prefixed names:</p>
-<pre><code>{ 
-    _ns: { 
-        _: &#39;http://example.org/ontology/&#39;,
-        dct: &#39;http://purl.org/dc/terms/&#39;
-    },
-    _id: &#39;http://example.com/people#alice&#39;,
-    a: &#39;foaf:Person&#39;,
-    foaf_name: &#39;Alice Smisth&#39;,
-    foaf_age: &#39;42^xsd:integer&#39;,
-    foaf_homepage: [
-       &#39;http://personal.example.org/~alice/&#39;,
-       &#39;http://work.example.com/asmith/&#39; 
-    ],
-    foaf_knows: { 
-        _id: &#39;_:1&#39;,
-        foaf_name: &#39;John&#39;,
-        dct_description: &#39;a nice guy@en&#39; 
-    },
-    neighbor: &#39;_:1&#39; 
-}</code></pre>
-</section>
-<section class="level3" id="perl">
-<h3><a href="#perl"><span class="header-section-number">5.1.4</span> Perl</a></h3>
-<p>Similar rules apply to aREF in <strong>Perl</strong>:</p>
-<pre><code>{
-    _ns =&gt; {
-        _ =&gt; &#39;http://example.org/ontology/&#39;,
-       dct =&gt; &#39;http://purl.org/dc/terms/&#39;,
-    },
-    _id =&gt; &#39;http://example.com/people#alice&#39;,
-    a   =&gt; &#39;foaf:Person&#39;,
-    foaf_name =&gt; &#39;Alice Smith&#39;,
-    foaf_age  =&gt; &#39;42^xsd:integer&#39;, 
-    foaf_homepage =&gt; [
-        &#39;http://personal.example.org/~alice/&#39;,
-        &#39;http://work.example.com/asmith/&#39; 
-    ],
-    foaf_knows =&gt; {
-        _id =&gt; &#39;_:1&#39;
-        foaf_name =&gt; &#39;John&#39;,
-        dct_description =&gt; &#39;a nice guy@en&#39;,
-    },
-    neighbor =&gt; &#39;_:1&#39;,
-}</code></pre>
-</section>
-<section class="level3" id="php">
-<h3><a href="#php"><span class="header-section-number">5.1.5</span> PHP</a></h3>
-<p>Although <strong>PHP</strong> does not fully differntiate arrays and maps, one can express both. A PHP array is a map unless all PHP array keys are numeric:</p>
-<pre><code>[
-    &quot;_ns&quot; =&gt; [ 
-        &quot;_&quot; =&gt; &quot;http://example.org/ontology/&quot;,
-        &quot;dct&quot; =&gt; &quot;http://purl.org/dc/terms/&quot;
-    ],
-    &quot;_id&quot; =&gt; &quot;http://example.com/people#alice&quot;,
-    &quot;a&quot; =&gt; &quot;foaf:Person&quot;,
-    &quot;foaf:name&quot; =&gt; &quot;Alice Smith&quot;,
-    &quot;foaf:age&quot;  =&gt; &quot;42^xsd:integer&quot;,
-    &quot;foaf:homepage&quot; =&gt; [
-        &quot;http://personal.example.org/~alice/&quot;,  /* key &quot;0&quot; */
-        &quot;http://work.example.com/asmith/&quot;       /* key &quot;1&quot; */
-    ],
-    &quot;foaf:knows&quot; =&gt; [
-        &quot;_id&quot; =&gt; &quot;_:1&quot;,
-        &quot;foaf:name&quot; =&gt; &quot;John&quot;,
-        &quot;dct:description&quot; =&gt; &quot;a nice guy@en&quot;
-    ],
-    &quot;neighbor&quot; =&gt; &quot;_:1&quot;
-];</code></pre>
-</section>
-</section>
-<section class="level2" id="examples-from-json-ld-specification">
-<a id="Examples from JSON-LD specification"></a><h2><a href="#examples-from-json-ld-specification"><span class="header-section-number">5.2</span> Examples from JSON-LD specification</a></h2>
->>>>>>> 51c46c63bf1533024f6a69a2a4c18453ed989315
 <p>Example 1/2 from JSON-LD adopted as aRef in JSON or Python:</p>
 <pre><code>{
   &quot;schema:name&quot;: &quot;Manu Sporny&quot;,
@@ -816,12 +509,8 @@ foaf:depiction: http://twitter.com/account/profile_image/markuslanthaler</code><
 </tbody>
 </table>
 </section>
-<<<<<<< HEAD
-=======
-</section>
->>>>>>> 51c46c63bf1533024f6a69a2a4c18453ed989315
 <section class="level1" id="appendix">
-<h1><a href="#appendix"><span class="header-section-number">6</span> Appendix</a></h1>
+<h1><a href="#appendix"><span class="header-section-number">5</span> Appendix</a></h1>
 <p>IRI syntax as defined in <a href="http://tools.ietf.org/html/rfc3987">RFC 3987</a>:</p>
 <pre><code>   IRI            = scheme &quot;:&quot; ihier-part [ &quot;?&quot; iquery ]
                          [ &quot;#&quot; ifragment ]
