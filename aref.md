@@ -67,7 +67,9 @@ variants exist. RDF data as encoded by aREF is defined as following:
 This definition of RDF data neither includes relative IRIs nor blank node
 identifiers. When an *RDF graph* is encoded in aREF one can use [*blank node
 identifiers*](#blank-nodes) to refer to particular blank nodes within the scope
-of the same *RDF graph*.
+of the same *RDF graph*. RDF extensions such as named graphs, blank nodes as
+predicates, and literal nodes as subjects are not covered by this specification
+nor expressible in aREF.
 
 ## Lists-map-structures
 
