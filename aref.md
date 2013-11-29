@@ -83,7 +83,7 @@ A **list-map-structure** is an abstract data structure build of
   and a mapping from these *keys* to *list-map-structures*.
 
 Every aREF document MUST be given as *map*. Applications MAY restrict aREF
-documents to non-recursive *list-map-structures*.
+documents to non-circular *list-map-structures*.
 
 # Encoding
 
@@ -231,7 +231,7 @@ An *RDF graph* in aREF is encoded as a [*list-map-structure*] that is:
   special *key* "`_ns`". 
 
 A *map* that encodes an *RDF graph* is also called **root map**. In
-a recursive [*list-map-structure*] it is possible to select different
+a circular [*list-map-structure*] it is possible to select different
 *maps* as *root map* to encode the same *RDF graph*, but only one *map*
 MUST be selected at the same time and only this *map* MAY contain a
 [*namespace map*].
