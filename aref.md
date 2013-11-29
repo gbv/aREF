@@ -63,7 +63,6 @@ variants exist. RDF data as encoded by aREF is defined as following:
   node with datatype `http://www.w3.org/2001/XMLSchema#string`.
 * A **datatype** is an *IRI*.
 * A **language tag** is a well-formed laguage tag as defined in [BCP 47].
-* A **blank node** is neither an *IRI* nor a *literal node*.
 
 This definition of RDF data neither includes relative IRIs nor blank node
 identifiers. When an *RDF graph* is encoded in aREF one can use [*blank node
