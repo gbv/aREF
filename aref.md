@@ -87,6 +87,88 @@ documents to non-circular *list-map-structures*.
 
 # Encoding
 
+An *RDF graph* in aREF is encoded as a [*list-map-structure*] that is either a
+[*subject map*], or a [*predicate map*] that MUST contain the special *key*
+"`_id`". The special key "`_ns`" MAY further be used to specify a [*namespace
+map*].
+
+## Subject maps
+
+[*subject map*]: #subject-maps
+
+A **subject map** is a *map* with the following constraints:
+
+-   Every *key*, except the optional key "`_ns`", is an encoded IRI (as
+    [*absolute IRI*], as [*prefixed name*], or as [*plain name*]), or a 
+    [*blank node identifier*]. These *keys* encode *subjects* of *triples*
+    encoded by the *subject map*.
+
+-   Every value, except if mapped from the optional key "`_ns`", is an 
+    [*predicate map*] with the following constraint:
+
+    -   It MUST NOT contain the special key "`_ns`".
+
+    -   If it contains the special *key* "`_id`" then the *key* must
+        be mapped to an encoding of the same subject IRI.
+
+## Predicate maps
+
+[*predicate map*]: #predicate-maps
+
+A **predicate map** is a *map* with the following constraints:
+
+-   Every *key*, except the optional keys "`_id`" and "`_ns`", MUST be an
+    encoded IRI (as [*absolute IRI*], as [*prefixed name*], or as 
+    [*plain name*]). These *keys* encode *predicates* of *triples* encoded 
+    by the *predicate map*.
+
+-   Every value, except if mapped from the optional keys "`_id`" or "`_ns`",
+    must be an [*encoded object*].
+
+-   The optional key "`_id`", if given, is mapped to an encoded IRI 
+    (as [*absolute IRI*] or as [*prefixed name*]) or to a 
+    [*blank node identifier*]. This value specifies the *subject* of all 
+    *triples* encoded by the *predicate map*. 
+    If the key does not exist, the *subject* is either given implicitly
+    because the *predicate map* is used as part of a [*subject map*] or
+    the *subject* is a *blank node*.
+
+## Namespace maps
+
+[*namespace map*]: #namespace-maps
+
+A **namespace map** in aREF is either a *string* that defines a default
+namespace, or a *map* where every *key* conforms to the `prefix` syntax rule
+(see [*prefixed name*]) and is mapped to an IRI, given as string that conforms
+to the `IRI` syntax rule from [RFC 3987]. The IRI is called **namespace URI**.
+A *namespace map* can be specified both, explicitly with the special key
+"`_ns`" in a [*subject map*] or in a [*predicate map*], and implicitly by
+assuming a [predefined namespace map].
+
+## Encoded objects
+
+[*encoded object*]: #encoded-objects
+
+An **encoded object** in aREF represents one or multiple *objects* of RDF
+*triples* with same *subject* and same *predicate*. An encoded object can be
+any of:
+
+-   a IRI, encoded as [*absolute IRI*] or as [*prefixed name*],
+-   a [literal node](#literal-nodes), encoded as string,
+-   a [blank node](#blank-nodes), encoded as string,
+-   a *list* with each element is a string encoding an RDF *object*
+    with any of the three methods above.
+
+A *list* represents a set of RDF objects, so the order of elements is
+irrelevant. A list SHOULD NOT contain the same RDF object multiple times
+(as same string or in different encoding forms).
+
+The object of a single RDF triple can be encoded both as string and as list of
+one string. The former form is RECOMMENDED but the latter form is possible as
+well, as known from [RDF/JSON].
+
+***TODO**: restrict encoding of IRI in contrast to IRI as subject or predicate.*
+
 ## IRIs
 
 An *IRI* in aREF is encoded as string, either in form of an [*absolute
@@ -97,13 +179,13 @@ IRI*](#absolute-iris) or as [*prefixed name*](#prefixed-names).
 [*absolute IRI*]: #absolute-iris
 
 An **absolute IRI** is either an IRI enclosed in angle brackets (`<` and `>`),
-or an IRI that also matches the syntax rule `plainIRI` but not the syntax rule
+or an IRI that also matches the syntax rule `IRIlike` but not the syntax rule
 `literalNode`.
 
-      absoluteIRI   ::= "<" IRI ">" | plainIRI
+      absoluteIRI   ::= "<" IRI ">" | IRIlike
                         /* IRI syntax rule from RFC 3987 */
 
-      plainIRI      ::= [a-z] ( [a-z] | [0-9] | "+" | "." | "-" )* ":" string?
+      IRIlike       ::= [a-z] ( [a-z] | [0-9] | "+" | "." | "-" )* ":" string?
                         /* MUST also match IRI syntax rule from RFC 3987 */
                         /* MUST NOT match syntax rule literalNode */
 
@@ -113,6 +195,7 @@ because literals are not allwed at this place anyway*.
 ### Prefixed names
 
 [*prefixed name*]: #prefixed-names
+[*plain name*]: #prefixed-names
 
 A **prefixed name** consists of a **prefix** and a **name** separated by a
 colon (`:`) or by an underscore (`_`): 
@@ -120,6 +203,13 @@ colon (`:`) or by an underscore (`_`):
       prefixedName  ::= prefix ( ":" | "_" ) name
 
 ***TODO:** disallow underscore in an [*encoded object*]*
+
+A **plain name** consists of an optional separator and a name:
+
+      plainName     ::= ( ":" | "_" )? name
+
+The special *plain name* “`a`” if given as *key* in a *predicate map* is always
+an alias for the IRI "`http://www.w3.org/1999/02/22-rdf-syntax-ns#type`".
 
 The prefix is a string starting with a
 lowercase letter (`a-z`) optionally followed by a sequence of lowercase letters
@@ -170,7 +260,7 @@ node*] (`blankNode`), the string SHOULD be used as given.
                          string
                          /* MUST NOT end with "@" */
                          /* MUST NOT match syntax rule 
-                            absoluteIRI, plainIRI, prefixedName, or blankNode */
+                            absoluteIRI, IRIlike, prefixedName, or blankNode */
 
 ### Literal nodes with language tag
 
@@ -221,109 +311,7 @@ identifiers* in an aREF document if the *blank node* encoded by a *blank node
 identifier* is never referenced in the same RDF graph. In the simplest case, a
 *blank node* in aREF can be encoded as an empty *map*.
 
-## Graphs
-
-An *RDF graph* in aREF is encoded as a [*list-map-structure*] that is: 
-
-* either a [*predicate map*] that MUST contain the special *key* "`_id`"
-  and MAY contain a [*namespace map*] with the special *key* "`_ns`". 
-* or a [*subject map*] that MAY contain a [*namespace map*] with the 
-  special *key* "`_ns`". 
-
-A *map* that encodes an *RDF graph* is also called **root map**. In
-a circular [*list-map-structure*] it is possible to select different
-*maps* as *root map* to encode the same *RDF graph*, but only one *map*
-MUST be selected at the same time and only this *map* MAY contain a
-[*namespace map*].
-
-### Predicate maps
-
-[*predicate map*]: #predicate-maps
-
-A *predicate map* is a *map* with the following constraints:
-
--   A *predicate map* MAY contain the special key "`_id`", mapped to
-    an encoded IRI (as [*absolute IRI*] or as [*prefixed name*]) or 
-    to a [*blank node identifier*]. This IRI 
-    encodes the *subject* of all *triples* encoded by the *predicate map*. 
-    If the key does not exist, the *subject* is either given because
-    the *predicate map* is used as part of a [*subject map*] or the 
-    IRI is a *blank node*.
-
--   If a *predicate map* is used as *root map*, it MAY contain a 
-    [*namespace map*] with the special key "`_ns`".
-
--   Every *key*, except the optional special keys "`_id`" and "`_ns`"
-    MUST be either an encoded IRI or the string “`a`” as alias for 
-    the IRI "`http://www.w3.org/1999/02/22-rdf-syntax-ns#type`". These
-    IRIs encode the *predicates* of *triples* encoded by the *predicate map*.
-
--   Evey value of a *keys* that encodes a *predicate* must be an
-    [*encoded object*].
-
-***TODO**: allow underscores in a [*prefixed name*] and default namespaces only in keys of a predicate map?*
-
-### Subject maps
-
-[*subject map*]: #subject-maps
-
-A **subject map** is a *map* with the following constraints:
-
--   If a *predicate map* is used as *root map*, it MAY contain a 
-    [*namespace map*] with the special key "`_ns`".
-
--   Every other *key* is an encoded IRI (as [*absolute IRI*] or 
-    as [*prefixed name*]). These IRI are *subjects* of *triples*
-    encoded by the *subject map*.
-
--   Every subject key is mapped to a [*predicate map*] with the
-    following constraint:
-
-    -   The predicate map SHOULD NOT contain the the special 
-        *key* "`_id`". If it contains this *key*, the *key*
-        MUST be mapped to an encoding of the same subject IRI.
-
-A *subject map* contains zero or more *subjects* as *keys*,
-similar to an *RDF graph* encoded in [RDF/JSON].
-
-### Encoded objects
-
-[*encoded object*]: #encoded-objects
-
-An **encoded object** in aREF represents one or multiple *objects* of RDF
-*triples* with same *subject* and same *predicate*. An encoded object can be
-any of:
-
--   a IRI, encoded as [*absolute IRI*] or as [*prefixed name*],
--   a [literal node](#literal-nodes), encoded as string,
--   a [blank node](#blank-nodes), encoded as string,
--   a *list* with each element is a string encoding an RDF *object*
-    with any of the three methods above.
-
-A *list* represents a set of RDF objects, so the order of elements is
-irrelevant. A list SHOULD NOT contain the same RDF object multiple times
-(as same string or in different encoding forms).
-
-The object of a single RDF triple can be encoded both as string and as list of
-one string. The former form is RECOMMENDED but the latter form is possible as
-well, as known from [RDF/JSON].
-
-***TODO**: restrict encoding of IRI in contrast to IRI as subject or predicate.*
-
-### Namespace maps
-
-[*namespace map*]: #namespace-maps
-
-A **namespace map** in aREF is a *map* where every *key* conforms to the
-`prefix` syntax rule (see [*prefixed name*]) and is mapped to an IRI, given as
-string that conforms to the `IRI` syntax rule from [RFC 3987]. The IRI is
-called **namespace URI**. A *namespace map* can be specified both, explicitly
-with the special key "`_ns`" in a [*subject map*] or in a [*predicate map*],
-and implicitly by assuming a [predefined namespace map].
-
-Namespace maps MUST be given at the *root map* of an encoded *RDF graph*.
-
-### Predefined namespace maps
+## Predefined namespace maps
 
 [predefined namespace map]: #predefined-namespace-maps
 

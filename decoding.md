@@ -4,10 +4,10 @@
 may contain errors!*
 
 ~~~
-regexp PREFIX   = /^[a-z]([a-z]|[0-9])*$/
-regexp IRI_LIKE = /^[a-z]([a-z]|[0-9]|+|\.|-)*:.*$/
-regexp NAME     = ... /* see specification */
-regexp IRI      = ... /* see RFC 3987 */
+regexp PREFIX  = /^[a-z]([a-z]|[0-9])*$/
+regexp IRIlike = /^[a-z]([a-z]|[0-9]|+|\.|-)*:.*$/
+regexp NAME    = ... /* see specification */
+regexp IRI     = ... /* see RFC 3987 */
 
 global namespaces   /* predefined namespace map */
 global visted       /* track recursive structures */
@@ -23,7 +23,7 @@ function decode( map )
         foreach key in map except "_ns"
             subject = iri_or_blank(key)
             predicates = map[key]
-            if predicates["_id"] and iri_or_blank( predicates["id"] ) != subject
+            if predicates["_id"] and iri_or_blank( predicates["_id"] ) != subject
                 error "inconsistent _id"
             else
                 predicate_map( subject, predicates )
@@ -33,7 +33,7 @@ function namespace_map( ns )
         namespaces[""] = ns[key]
     else if is_map(ns)
         foreach key in ns 
-            if key matches PREFIX and ns[key] matches IRI_LIKE
+            if key matches PREFIX and ns[key] matches IRIlike
                 if key == "_"
                     prefix = ""
                 else
@@ -52,18 +52,19 @@ function predicate_map( subject, map )
             object( subject, predicate, map[key] )
 
 function iri_or_blank( string )
-    if string matches /^<(.+)>$/
-        if $1 matches IRI
-            return $1
-    else if string matches /^_:([a-z]|[A-Z]|[0-9])+$/
-        return blank_node($1)
-    else if string matches /^((PREFIX)?[:_])?(NAME)$/
-        prefix = $1
-        if namespaces[prefix]
-            return concat(namespaces[prefix],$3)
-    else if string matches IRI_LIKE
-        if string matches IRI
-            return string
+    switch(string)
+        /^<(.+)>$/
+            if $1 matches IRI
+                return $1
+        /^_:([a-z]|[A-Z]|[0-9])+$/
+            return blank_node($1)
+        /^((PREFIX)?[:_])?(NAME)$/
+            prefix = $1
+            if namespaces[prefix]
+                return concat(namespaces[prefix],$3)
+        IRIlike
+            if string matches IRI
+                return string
     error "invalid IRI"
     return false
 
@@ -97,46 +98,47 @@ function single_object( subject, predicate, object )
             visited[object] = true
             predicate_map( object_node, object )
     else
-        if object matches /^<(.+)>$/
-            if $1 matches IRI
-                object_node = $1
-            else
-                error "invalid IRI"
-                return
-        else if string matches /^_:([a-z]|[A-Z]|[0-9])+$/
-            object_node = blank_node($1)
-        else if string matches /^(PREFIX)?:(NAME)$/
-            prefix = $1
-            if namespaces[prefix]
-                object_node = concat(namespaces[prefix],$3)
-            else
-                error "unknown prefix"
-                return
-        else if object matches /^(.*)@([a-z]{2,8}(-[a-z0-9]{1,8})*)$/
-            object_node = literal_node( $1, $2 )
-        else if string matches /^(.*?)^^?(PREFIX)?:(NAME)$/
-            prefix = $1
-            if namespaces[prefix]
-                datatype = concat(namespaces[prefix],$3)
-                object_node = literal_node( $1, false, datatype )
-            else
-                error "unknown prefix in datatype"
-                return
-        else if string matches /^(.*?)^^?<(IRI_LIKE)>$/
-            if $2 matches IRI
-                datatype = $2
-                object_node = literal_node( $1, false, datatype )
-            else
-                error "invalid datatype IRI"
-                return
-        else if string matches IRI_LIKE
-            if object matches IRI
-                object_node = object
-            else
-                error "invalid IRI"
-                return
-        else 
-            object_node = literal_node( object )
+        switch(object)
+            /^<(.+)>$/
+                if $1 matches IRI
+                    object_node = $1
+                else
+                    error "invalid IRI"
+                    return
+            /^_:([a-z]|[A-Z]|[0-9])+$/
+                object_node = blank_node($1)
+            /^(PREFIX)?:(NAME)$/
+                prefix = $1
+                if namespaces[prefix]
+                    object_node = concat(namespaces[prefix],$3)
+                else
+                    error "unknown prefix"
+                    return
+            /^(.*)@([a-z]{2,8}(-[a-z0-9]{1,8})*)$/
+                object_node = literal_node( $1, $2 )
+            /^(.*?)^^?(PREFIX)?:(NAME)$/
+                prefix = $1
+                if namespaces[prefix]
+                    datatype = concat(namespaces[prefix],$3)
+                    object_node = literal_node( $1, false, datatype )
+                else
+                    error "unknown prefix in datatype"
+                    return
+            /^(.*?)^^?<(IRIlike)>$/
+                if $2 matches IRI
+                    datatype = $2
+                    object_node = literal_node( $1, false, datatype )
+                else
+                    error "invalid datatype IRI"
+                    return
+            IRIlike
+                if object matches IRI
+                    object_node = object
+                else
+                    error "invalid IRI"
+                    return
+            default 
+                object_node = literal_node( object )
 
         triple( subject, predicate, object_node )
 ~~~
