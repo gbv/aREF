@@ -182,12 +182,14 @@ An **absolute IRI** is either an IRI enclosed in angle brackets (`<` and `>`),
 or an IRI that also matches the syntax rule `IRIlike` but not the syntax rule
 `literalNode`.
 
-      absoluteIRI   ::= "<" IRI ">" | IRIlike
-                        /* IRI syntax rule from RFC 3987 */
+      absoluteIRI   = "<" IRI ">" / IRIlike
+                        ; IRI syntax rule from RFC 3987
 
-      IRIlike       ::= [a-z] ( [a-z] | [0-9] | "+" | "." | "-" )* ":" string?
-                        /* MUST also match IRI syntax rule from RFC 3987 */
-                        /* MUST NOT match syntax rule literalNode */
+      IRIlike       = a2z *( a2z / DIGIT / "+" / "." / "-" ) ":" [ string ]
+                        ; MUST also match IRI syntax rule from RFC 3987
+                        ; MUST NOT match syntax rule literalNode
+
+      a2z           = %x61-7A       ; a-z
 
 ***TODO:** loose restriction for absolute IRIs as subject and as predicates
 because literals are not allwed at this place anyway*.
@@ -200,13 +202,13 @@ because literals are not allwed at this place anyway*.
 A **prefixed name** consists of a **prefix** and a **name** separated by a
 colon (`:`) or by an underscore (`_`): 
 
-      prefixedName  ::= prefix ( ":" | "_" ) name
+      prefixedName  = prefix ( ":" / "_" ) name
 
 ***TODO:** disallow underscore in an [*encoded object*]*
 
 A **plain name** consists of an optional separator and a name:
 
-      plainName     ::= ( ":" | "_" )? name
+      plainName     = [ ":" / "_" ] name
 
 The special *plain name* “`a`” if given as *key* in a *predicate map* is always
 an alias for the IRI "`http://www.w3.org/1999/02/22-rdf-syntax-ns#type`".
@@ -215,21 +217,19 @@ The prefix is a string starting with a
 lowercase letter (`a-z`) optionally followed by a sequence of lowercase letters
 and digits (`0-9`).
 
-
-      prefix        ::= [a-z] ( [a-z] | [0-9] )*
+      prefix        = a2z *( a2z / DIGIT )    ; a-z *( a-z / 0-9 )
 
 A name is a string that is either empty or conforms to the following syntax:
 
-      name          ::= nameStartChar nameChar*
+      name          = nameStartChar *(nameChar)
 
-      nameStartChar ::= [A-Z] | "_" | [a-z] | [#x00C0-#x00D6] | [#x00D8-#x00F6] |
-                        [#x00F8-#x02FF] | [#x0370-#x037D] | [#x037F-#x1FFF] | 
-                        [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | 
-                        [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] |
-                        [#x10000-#xEFFFF]
+      nameStartChar = ALPHA / "_" / %x00C0-%x00D6 / %x00D8-%x00F6 /
+                      %x00F8-%x02FF / %x0370-%x037D / %x037F-%x1FFF / 
+                      %x200C-%x200D / %x2070-%x218F / %x2C00-%x2FEF / 
+                      %x3001-%xD7FF / %xF900-%xFDCF / %xFDF0-%xFFFD /
+                      %x10000-%xEFFFF
 
-      nameChar      ::= nameStartChar | '-' | [0-9] | #x00B7 | 
-                        [#x0300-#x036F] | [#x203F-#x2040]
+      nameChar      = nameStartChar / '-' / DIGIT / %xB7 / %x0300-%x036F / %x203F-%x2040
 
 This definition is more restrictive than corresponding definitions in Turtle
 and JSON-LD. The restriction allows for both, URI scheme names as URI prefixes
@@ -245,7 +245,7 @@ triples that include a node with an unknown prefix.
 
 A literal node in aREF is encoded as string in one of three forms:
 
-      literalNode   ::= plainLiteral | languageString | datatypeString
+      literalNode   = plainLiteral / languageString / datatypeString
 
 ### Simple literals
 
@@ -256,20 +256,19 @@ an at sign (`@`) nor matches to any of the syntax rules of [*absolute IRI*]
 (`absoluteIRI`), [*prefixed name*] (`prefixedName`) and [*identified blank
 node*] (`blankNode`), the string SHOULD be used as given. 
 
-      plainLiteral   ::= string "@"
-                         string
-                         /* MUST NOT end with "@" */
-                         /* MUST NOT match syntax rule 
-                            absoluteIRI, IRIlike, prefixedName, or blankNode */
+      plainLiteral   = string "@" / string
+                       ; MUST NOT end with "@"
+                       ; MUST NOT match syntax rule 
+                         absoluteIRI, IRIlike, prefixedName, or blankNode
 
 ### Literal nodes with language tag
 
 Literal nodes with *language tag* are encoded by appending an at sign (`@`)
 followed by the language tag to the literal node’s string:
 
-      languageString ::= string "@" languageTag
+      languageString = string "@" languageTag
 
-      languageTag    ::= [a-z]{2,8} ( "-" [a-z0-9]{1,8} )*
+      languageTag    = 2*8(ALPHA) *( "-" 1*8( ALPHA / DIGIT ) )
 
 Note that the syntax rule of a language tag in aREF is slightly more
 restrictive than the syntax of a language tag in [Turtle] but less restrictive
@@ -282,7 +281,7 @@ A literal node with *datatype* is encoded by appending one or two carets (`^`)
 followed by the datatype’s IRI either enclosed in “`<`” and “`>`” or as
 [*prefixed name*]:
 
-      datatypeString ::= string "^" "^"? ( prefixedName | "<" IRI ">" )
+      datatypeString = string "^" [ "^" ] ( prefixedName / "<" IRI ">" )
 
 Note that [Turtle] only supports the character sequence “`^^`” instead of a
 single “`^`” to serialize literal nodes with datatype.
@@ -302,7 +301,7 @@ rule. Note that the syntax rule `blankNode` is more
 restrictive than the rule of blank node identifiers in [Turtle] and in
 [JSON-LD]:
 
-      blankNode      ::= "_:" ( [a-z] | [A-Z] | [0-9] )+
+      blankNode      = "_:" 1*( ALPHA / DIGIT )
 
 Within the scope of the same *RDF graph*, equal *blank node identifiers* MUST
 refer to the same *blank node*. *Blank node identifiers* MUST NOT be shared
@@ -380,6 +379,11 @@ Sources: http://stats.lod2.eu/vocabularies, http://prefix.cc/popular/all.txt, ht
     *Unicode Normalization Forms*.
     Unicode Standard Annex #15
     <http://www.unicode.org/unicode/reports/tr15/>
+
+-   D. Crocker; P. Overell:
+    *Augmented BNF for Syntax Specifications: ABNF*.
+    RFC5234, 2010.
+    <http://tools.ietf.org/html/rfc5234>
 
 ## Other references
 
