@@ -411,6 +411,8 @@ Sources: http://stats.lod2.eu/vocabularies, http://prefix.cc/popular/all.txt, ht
 -   *RDFa Core Initial Context. Vocabulary Prefixes*.
     <http://www.w3.org/2011/rdfa-context/rdfa-1.1>
 
+-   *RDF::aREF*. Perl Module.
+    <https://metacpan.org/pod/RDF::aREF>
 
 [RFC 3987]: http://tools.ietf.org/html/rfc3987
 [RFC 2119]: http://tools.ietf.org/html/rfc2119
