@@ -3,6 +3,9 @@
 *this section ins non-normative. It may reflect a different version of aREF and
 may contain errors!*
 
+See [RDF-aREF](https://metacpan.org/release/RDF-aREF) for a more recent
+reference implementation.
+
 ~~~
 regexp PREFIX  = /^[a-z]([a-z]|[0-9])*$/
 regexp IRIlike = /^[a-z]([a-z]|[0-9]|+|\.|-)*:.*$/

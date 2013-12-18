@@ -27,10 +27,10 @@ their definition and terms written in "*italics*" refer to concepts defined
 elsewhere in this document. Uppercase keywords (MUST, MAY, RECOMMENDED,
 SHOULD...) are used as defined in [RFC 2119].
 
-Syntax rules in this document are expressed using the [EBNF notation used by
-W3C](http://www.w3.org/TR/REC-xml/#sec-notation). The term **string** in this
-document always refers to Unicode strings as defined by [Unicode]. A *string*
-can also be defined with the following syntax rule:
+Syntax rules in this document are expressed in ABNF notation as specified by
+[RFC 5234]. The term **string** in this document always refers to Unicode strings
+as defined by [Unicode]. A *string* can also be defined with the following
+syntax rule:
 
     string          ::= [#x0-#x10FFFF]*
 
@@ -38,15 +38,15 @@ Strings SHOULD be in Normal Form C ([NFC]). Applications MAY restrict strings
 by disallowing selected Unciode codepoints, such as the 66 Unicode
 noncharacters or the set of Unicode characters not expressible in XML.
 
-[NFC]: http://www.unicode.org/unicode/reports/tr15/
-
 ## RDF data
 
 [*RDF graphs*]: #rdf-data
 
 RDF is a graph-based data structuring languages defined as abstract syntax by
 Klyne and Carroll ([2004](http://www.w3.org/TR/rdf-concepts/)). Several RDF
-variants exist. RDF data as encoded by aREF is defined as following:
+variants exist (in particular see [Wood, 2013](http://www.w3.org/TR/rdf11-new/)
+for a comparision between RDF 1.0 and RDF 1.1). RDF data as encoded by aREF is
+defined as following:
 
 * An **RDF graph** is a set of *triples*.
 * A **triple** (also known as "statement") consists of a *subject*,
@@ -65,9 +65,9 @@ variants exist. RDF data as encoded by aREF is defined as following:
 * A **language tag** is a well-formed laguage tag as defined in [BCP 47].
 
 This definition of RDF data neither includes relative IRIs nor blank node
-identifiers. When an *RDF graph* is encoded in aREF one can use [*blank node
+identifiers.  An *RDF graph* encoded in aREF can include [*blank node
 identifiers*](#blank-nodes) to refer to particular blank nodes within the scope
-of the same *RDF graph*. RDF extensions such as named graphs, blank nodes as
+of the same *RDF graph*.  RDF extensions such as named graphs, blank nodes as
 predicates, and literal nodes as subjects are not covered by this specification
 nor expressible in aREF.
 
@@ -182,14 +182,15 @@ An **absolute IRI** is either an IRI enclosed in angle brackets (`<` and `>`),
 or an IRI that also matches the syntax rule `IRIlike` but not the syntax rule
 `literalNode`.
 
-      absoluteIRI   = "<" IRI ">" / IRIlike
-                        ; IRI syntax rule from RFC 3987
+      absoluteIRI   = explicitIRI / IRIlike
 
-      IRIlike       = a2z *( a2z / DIGIT / "+" / "." / "-" ) ":" [ string ]
+      explicitIRI   = "<" IRI ">"   ; IRI syntax rule from RFC 3987
+
+      IRIlike       = LOWERCASE *( LOWERCASE / DIGIT / "+" / "." / "-" ) ":" [ string ]
                         ; MUST also match IRI syntax rule from RFC 3987
                         ; MUST NOT match syntax rule literalNode
 
-      a2z           = %x61-7A       ; a-z
+      LOWERCASE     = %x61-%x7A     ; a-z
 
 ***TODO:** loose restriction for absolute IRIs as subject and as predicates
 because literals are not allwed at this place anyway*.
@@ -217,7 +218,7 @@ The prefix is a string starting with a
 lowercase letter (`a-z`) optionally followed by a sequence of lowercase letters
 and digits (`0-9`).
 
-      prefix        = a2z *( a2z / DIGIT )    ; a-z *( a-z / 0-9 )
+      prefix        = LOWERCASE *( LOWERCASE / DIGIT )    ; a-z *( a-z / 0-9 )
 
 A name is a string that is either empty or conforms to the following syntax:
 
@@ -259,7 +260,7 @@ node*] (`blankNode`), the string SHOULD be used as given.
       plainLiteral   = string "@" / string
                        ; MUST NOT end with "@"
                        ; MUST NOT match syntax rule 
-                         absoluteIRI, IRIlike, prefixedName, or blankNode
+                         explicitIRI, IRIlike, prefixedName, or blankNode
 
 ### Literal nodes with language tag
 
@@ -368,6 +369,8 @@ Sources: http://stats.lod2.eu/vocabularies, http://prefix.cc/popular/all.txt, ht
     RFC3987, January 2005.
     <http://tools.ietf.org/html/rfc3987>
 
+[RFC 3987]: http://tools.ietf.org/html/rfc3987
+
 -   A. Phillips; M. Davis:
     *Tags for Identifying Languages*. 
     BCP 47, September 2009.
@@ -380,10 +383,14 @@ Sources: http://stats.lod2.eu/vocabularies, http://prefix.cc/popular/all.txt, ht
     Unicode Standard Annex #15
     <http://www.unicode.org/unicode/reports/tr15/>
 
+[NFC]: http://www.unicode.org/unicode/reports/tr15/
+
 -   D. Crocker; P. Overell:
     *Augmented BNF for Syntax Specifications: ABNF*.
     RFC5234, 2010.
     <http://tools.ietf.org/html/rfc5234>
+
+[RFC 5234]: http://tools.ietf.org/html/rfc5234
 
 ## Other references
 
@@ -407,6 +414,10 @@ Sources: http://stats.lod2.eu/vocabularies, http://prefix.cc/popular/all.txt, ht
     W3C Working Group Note, 07 November 2013.
     <http://www.w3.org/TR/rdf-json/>
 
+-   David Boom (editor): *What’s New in RDF 1.1*.
+    W3C Working Draft, 17 December 2013.
+    <http://www.w3.org/TR/rdf11-new/>
+
 -   Graham Klyne:
     *Uniform Resource Identifier (URI) Schemes*.
     IANA, 21 October 2013.
@@ -415,10 +426,9 @@ Sources: http://stats.lod2.eu/vocabularies, http://prefix.cc/popular/all.txt, ht
 -   *RDFa Core Initial Context. Vocabulary Prefixes*.
     <http://www.w3.org/2011/rdfa-context/rdfa-1.1>
 
--   *RDF::aREF*. Perl Module.
-    <https://metacpan.org/pod/RDF::aREF>
+-   Jakob Voß: *RDF-aREF*. CPAN Perl Module.
+    <https://metacpan.org/release/RDF-aREF>
 
-[RFC 3987]: http://tools.ietf.org/html/rfc3987
 [RFC 2119]: http://tools.ietf.org/html/rfc2119
 [RFC 4151]: http://tools.ietf.org/html/rfc4151
 [RFC 5870]: http://tools.ietf.org/html/rfc5870
