@@ -1,0 +1,2 @@
+a[href^="#"] em { border-bottom: 1px dotted #666 }
+a[href^="#"] em { color: #000; }

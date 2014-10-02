@@ -6,3 +6,5 @@ SOURCE = aref.md
 GITHUB = https://github.com/gbv/aREF/
 
 include makespec/Makefile
+
+HTML_ARGS += --css aref.css
