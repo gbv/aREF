@@ -16,44 +16,40 @@ The most condensed readable serialization of aREF is probably possible in
 
     ---
     _ns: 
-        _:   http://example.org/ontology/
         dct: http://purl.org/dc/terms/
     _id: http://example.com/people#alice
-    a: foaf:Person
-    foaf:name: Alice Smith
-    foaf:age: 42^xsd:integer 
-    foaf:homepage: 
+    a: foaf_Person
+    foaf_name: Alice Smith
+    foaf_age: 42^xsd:integer 
+    foaf_homepage: 
         - http://personal.example.org/~alice/ 
         - http://work.example.com/asmith/ 
-    foaf:knows:
+    foaf_knows:
         _id: _:1
-        foaf:name: John
-        dct:description: a nice guy@en
-    neighbor: _:1
+        foaf_name: John
+        dct_description: a nice guy@en
 
 ### JSON
 
 The same in **JSON** requires more brackets and delimiters:
 
     { 
-        '_ns': { 
-            '_': 'http://example.org/ontology/',
-            'dct': 'http://purl.org/dc/terms/'
+        "_ns": { 
+            "dct": "http://purl.org/dc/terms/"
         },
-        '_id': 'http://example.com/people#alice',
-        'a': 'foaf:Person',
-        'foaf:name': 'Alice Smisth',
-        'foaf:age': '42^xsd:integer',
-        'foaf:homepage': [
-           'http://personal.example.org/~alice/',
-           'http://work.example.com/asmith/' 
+        "_id": "http://example.com/people#alice",
+        "a": "foaf:Person",
+        "foaf_name": "Alice Smisth",
+        "foaf_age": "42^xsd:integer",
+        "foaf_homepage": [
+           "http://personal.example.org/~alice/",
+           "http://work.example.com/asmith/" 
         ],
-        'foaf:knows': { 
-            _id: '_:1',
-            'foaf:name': 'John',
-            'dct:description': 'a nice guy@en' 
-        },
-        'neighbor': '_:1' 
+        "foaf_knows": { 
+            _id: "_:1",
+            "foaf_name": "John",
+            "dct_description": "a nice guy@en" 
+        }
     }
 
 ### JavaScript
@@ -63,7 +59,6 @@ prefixed names:
 
     { 
         _ns: { 
-            _: 'http://example.org/ontology/',
             dct: 'http://purl.org/dc/terms/'
         },
         _id: 'http://example.com/people#alice',
@@ -78,8 +73,7 @@ prefixed names:
             _id: '_:1',
             foaf_name: 'John',
             dct_description: 'a nice guy@en' 
-        },
-        neighbor: '_:1' 
+        }
     }
 
 ### Perl
@@ -88,7 +82,6 @@ Similar rules apply to aREF in **Perl**:
 
     {
         _ns => {
-            _ => 'http://example.org/ontology/',
            dct => 'http://purl.org/dc/terms/',
         },
         _id => 'http://example.com/people#alice',
@@ -103,8 +96,7 @@ Similar rules apply to aREF in **Perl**:
             _id => '_:1'
             foaf_name => 'John',
             dct_description => 'a nice guy@en',
-        },
-        neighbor => '_:1',
+        }
     }
 
 ### PHP
@@ -114,7 +106,6 @@ both. A PHP array is a map unless all PHP array keys are numeric:
 
     [
         "_ns" => [ 
-            "_" => "http://example.org/ontology/",
             "dct" => "http://purl.org/dc/terms/"
         ],
         "_id" => "http://example.com/people#alice",
@@ -129,8 +120,7 @@ both. A PHP array is a map unless all PHP array keys are numeric:
             "_id" => "_:1",
             "foaf:name" => "John",
             "dct:description" => "a nice guy@en"
-        ],
-        "neighbor" => "_:1"
+        ]
     ];
 
 
@@ -139,33 +129,33 @@ both. A PHP array is a map unless all PHP array keys are numeric:
 Example 1/2 from JSON-LD adopted as aRef in JSON or Python:
 
     {
-      "schema:name": "Manu Sporny",
-      "schema:url": "http://manu.sporny.org/",
-      "schema:image": "http://manu.sporny.org/images/manu.png"
+      "schema_name": "Manu Sporny",
+      "schema_url": "http://manu.sporny.org/",
+      "schema_image": "http://manu.sporny.org/images/manu.png"
     }
 
 Example 4/5 from JSON-LD adopted as aRef in JSON or Python:
 
     {
       "_ns": { "schema": "http://schema.org/" },
-      "schema:name": "Manu Sporny",
-      "schema:url": "http://manu.sporny.org/",
-      "schema:image": "http://manu.sporny.org/images/manu.png"
+      "schema_name": "Manu Sporny",
+      "schema_url": "http://manu.sporny.org/",
+      "schema_image": "http://manu.sporny.org/images/manu.png"
     }
 
 Example 11 from JSON-LD adopted as aRef in YAML:
 
     ---
     _id: http://me.markus-lanthaler.com/
-    schema:name: Markus Lanthaler
+    schema_name: Markus Lanthaler
 
 Example 14 from JSON-LD adopted as aRef in YAML:
 
     ---
     _id: http://example.org/places#BrewEats
     a: 
-        - schema:Restaurant
-        - schema:Brewery
+        - schema_Restaurant
+        - schema_Brewery
 
 Example 20 from JSON-LD adopted as aRef in YAML:
 
@@ -174,10 +164,10 @@ Example 20 from JSON-LD adopted as aRef in YAML:
         xsd: http://www.w3.org/2001/XMLSchema#
         foaf: http://xmlns.com/foaf/0.1/
     _id: http://me.markus-lanthaler.com/
-    a: foaf:Person
-    foaf:name: Markus Lanthaler
-    foaf:homepage: http://www.markus-lanthaler.com/
-    foaf:depiction: http://twitter.com/account/profile_image/markuslanthaler
+    a: foaf_Person
+    foaf_name: Markus Lanthaler
+    foaf_homepage: http://www.markus-lanthaler.com/
+    foaf_depiction: http://twitter.com/account/profile_image/markuslanthaler
 
 Example 23 from JSON-LD adopted as aRef in Perl:
 
@@ -203,8 +193,8 @@ Example 24 from JSON-LD adopted as aRef in Perl:
 
 More examples:
 
-        { "dct:modified": "2010-05-29T14:17:39+02:00^^xsd:dateTime" }
-        { "dct:modified": "2010-05-29T14:17:39+02:00^^<http://www.w3.org/2001/XMLSchema#dateTime>" }
+        { "dct_modified": "2010-05-29T14:17:39+02:00^xsd_dateTime" }
+        { "dct_modified": "2010-05-29T14:17:39+02:00^<http://www.w3.org/2001/XMLSchema#dateTime>" }
 
 
 Examples of RDF literals encoded as aRef strings:
@@ -213,15 +203,13 @@ Examples of RDF literals encoded as aRef strings:
   ------------------- ----------------------------------
   @                   `""`
   *empty string*      `""`
-  \^xsd:string        `""`
-  \^\^xsd:string      `""`
+  \^xsd_string        `""`
   @@                  `"@"`
-  @\^xsd:string       `"@"`
+  @\^xsd_string       `"@"`
   alice@en            `"alice"@en`
   alice@example.com   `"alice@example.com"`
   123                 `"123"`
   忍者@ja             `"忍者"@ja`
   Ninja@en@           `"Ninja@en"`
   foo:bar             *not a literal node, but an IRI*
-
 

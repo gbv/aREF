@@ -7,17 +7,13 @@ these formats, RDF data in aREF is not serialized as a Unicode string but
 encoded as a [*list-map-structure*], as supported by the type system of most
 programming languages and by data structuring languages such as JSON and YAML.
 
-**Status of this document**
-
 The specification of aREF is hosted in a public git repository at <{GITHUB}>,
-written in in [Pandoc’s Markdown](http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html)
+written in in [Pandoc’s
+Markdown](http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html)
 and managed with [makespec](https://github.com/jakobib/makespec). Please add
 and comment on issues to this specification at
-<https://github.com/gbv/aREF/issues>.
-
-This is version {VERSION} of aREF specification, last modified at
-{GIT_REVISION_DATE} with commit {GIT_REVISION_HASH}. The most recent version of
-this document is made available at <http://gbv.github.io/aREF/>.
+<https://github.com/gbv/aREF/issues>.  The most recent version of this document
+is made available at <http://gbv.github.io/aREF/>.
 
 # Background
 
@@ -26,14 +22,14 @@ this document is made available at <http://gbv.github.io/aREF/>.
 Terms written in "**bold**" refer to terms at the place of their definition in
 this document. Terms written in "*italics*" refer to terms defined elsewhere in
 this document. Uppercase keywords (MUST, MAY, RECOMMENDED, SHOULD...) are used
-as defined in [RFC 2119].
+as defined in [RFC 2119].  Syntax rules in this document are expressed in ABNF
+notation as specified by [RFC 5234]. 
 
-Syntax rules in this document are expressed in ABNF notation as specified by
-[RFC 5234]. The term **string** in this document always refers to Unicode strings
+The term **string** in this document always refers to Unicode strings
 as defined by [Unicode]. A *string* can also be defined with the following
 syntax rule:
 
-    string          ::= [#x0-#x10FFFF]*
+    string = *( %x0-%x10FFFF )
 
 Strings SHOULD be in Normal Form C ([NFC]). Applications MAY restrict strings
 by disallowing selected Unciode codepoints, such as the 66 Unicode
@@ -101,22 +97,18 @@ An *IRI* in aREF is encoded as *string*,
 
 [*plain IRI*]: #plain-iris
 
-An **plain IRI** is either an IRI enclosed in angle brackets (`<` and `>`),
-or an IRI that also matches the syntax rule `IRIlike` but not the syntax rule
-`literalNode`.
+An **plain IRI** is either an IRI given as string. The syntax rule `IRILike`
+can be used to distinguish plain IRIs from literal strings.
 
-      absoluteIRI   = explicitIRI / IRIlike
-
-      explicitIRI   = "<" IRI ">"   ; IRI syntax rule from RFC 3987
+An **explicit IRI** is an IRI enclosed in in angle brackets (`<` and `>`).
 
       IRIlike       = LOWERCASE *( LOWERCASE / DIGIT / "+" / "." / "-" ) ":" [ string ]
                         ; MUST also match IRI syntax rule from RFC 3987
                         ; MUST NOT match syntax rule literalNode
 
-      LOWERCASE     = %x61-%x7A     ; a-z
+      explicitIRI   = "<" IRI ">"   ; IRI syntax rule from RFC 3987
 
-***TODO:** loose restriction for plain IRIs as subject and as predicates
-because literals are not allwed at this place anyway*.
+      LOWERCASE     = %x61-%x7A     ; a-z
 
 ### QNames
 
@@ -254,7 +246,7 @@ A *simple literal* with datatype `http://www.w3.org/2001/XMLSchema#string` MAY
 be encoded as literal node with datatype or by appending an at sign (`@`) to
 the simple literal’s string. If the simple literal’s string neither ends with
 an at sign (`@`) nor matches to any of the syntax rules of [*plain IRI*]
-(`absoluteIRI`), [*qname*] (`qName`) and [*identified blank
+(`IRIlike` or `explicitIRI`), [*qname*] (`qName`) and [*identified blank
 node*] (`blankNode`), the string SHOULD be used as given. 
 
       plainLiteral   = string "@" / string
@@ -278,14 +270,15 @@ language tags as defined in [BCP 47].
 
 ### Literal nodes with datatype
 
-A literal node with *datatype* is encoded by appending one or two carets (`^`)
+A literal node with *datatype* is encoded by appending one carets (`^`)
 followed by the datatype’s IRI either enclosed in “`<`” and “`>`” or as
 [*qname*]:
 
-      datatypeString = string "^" [ "^" ] ( qName / "<" IRI ">" )
+      datatypeString = string "^" ( qName / "<" IRI ">" )
 
-Note that [Turtle] only supports the character sequence “`^^`” instead of a
-single “`^`” to serialize literal nodes with datatype.
+Note that [Turtle] uses the character sequence “`^^`” instead of a single “`^`”.
+
+*TODO: use IRILike instead of IRI*
 
 ## Blank nodes
 
@@ -422,8 +415,6 @@ Other sources:
 [JSON-LD]: http://json-ld.org/
 [RDF/JSON]: http://www.w3.org/TR/rdf-json/
 
-
-`decoding.md`{.include}
 
 `examples.md`{.include}
 
