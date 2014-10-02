@@ -3,16 +3,11 @@
 This document defines an encoding of [*RDF graphs*] called **another RDF
 encoding form (aREF)**. The encoding combines and simplfies best parts of
 existing RDF serializations [Turtle], [JSON-LD], and [RDF/JSON]. In contrast to
-these formats, RDF data in aREF is not serialized in form of a Unicode string
-but encoded in form of a [*list-map-structure*]. Thus, aREF allows to express
-RDF graphs in different data structuring languages and type systems of
-programming languages.
+these formats, RDF data in aREF is not serialized as a Unicode string but
+encoded as a [*list-map-structure*], as supported by the type system of most
+programming languages and by data structuring languages such as JSON and YAML.
 
-## Status of this document
-
-This is version {VERSION} of aREF specification, last modified at
-{GIT_REVISION_DATE} with commit {GIT_REVISION_HASH}. The most recent version of
-this document is made available at <http://gbv.github.io/aREF/>.
+**Status of this document**
 
 The specification of aREF is hosted in a public git repository at <{GITHUB}>,
 written in in [Pandoc’s Markdown](http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html)
@@ -20,12 +15,18 @@ and managed with [makespec](https://github.com/jakobib/makespec). Please add
 and comment on issues to this specification at
 <https://github.com/gbv/aREF/issues>.
 
+This is version {VERSION} of aREF specification, last modified at
+{GIT_REVISION_DATE} with commit {GIT_REVISION_HASH}. The most recent version of
+this document is made available at <http://gbv.github.io/aREF/>.
+
+# Background
+
 ## Terminology
 
-Within this document terms written in "**bold**" refer to defined concepts in
-their definition and terms written in "*italics*" refer to concepts defined
-elsewhere in this document. Uppercase keywords (MUST, MAY, RECOMMENDED,
-SHOULD...) are used as defined in [RFC 2119].
+Terms written in "**bold**" refer to terms at the place of their definition in
+this document. Terms written in "*italics*" refer to terms defined elsewhere in
+this document. Uppercase keywords (MUST, MAY, RECOMMENDED, SHOULD...) are used
+as defined in [RFC 2119].
 
 Syntax rules in this document are expressed in ABNF notation as specified by
 [RFC 5234]. The term **string** in this document always refers to Unicode strings
@@ -45,8 +46,11 @@ noncharacters or the set of Unicode characters not expressible in XML.
 RDF is a graph-based data structuring languages defined as abstract syntax by
 Klyne and Carroll ([2004](http://www.w3.org/TR/rdf-concepts/)). Several RDF
 variants exist (in particular see [Wood, 2013](http://www.w3.org/TR/rdf11-new/)
-for a comparision between RDF 1.0 and RDF 1.1). RDF data as encoded by aREF is
-defined as following:
+for a comparision between RDF 1.0 and RDF 1.1). RDF extensions with named
+graphs, blank nodes as predicates, and literal nodes as subjects are not
+covered by this specification nor expressible in aREF.
+
+RDF data as encoded by aREF is defined as following:
 
 * An **RDF graph** is a set of *triples*.
 * A **triple** (also known as "statement") consists of a *subject*,
@@ -64,12 +68,9 @@ defined as following:
 * A **datatype** is an *IRI*.
 * A **language tag** is a well-formed laguage tag as defined in [BCP 47].
 
-This definition of RDF data neither includes relative IRIs nor blank node
-identifiers.  An *RDF graph* encoded in aREF can include [*blank node
+An *RDF graph* encoded in aREF can also include [*blank node
 identifiers*](#blank-nodes) to refer to particular blank nodes within the scope
-of the same *RDF graph*.  RDF extensions such as named graphs, blank nodes as
-predicates, and literal nodes as subjects are not covered by this specification
-nor expressible in aREF.
+of the same *RDF graph*.  
 
 ## Lists-map-structures
 
@@ -83,102 +84,24 @@ A **list-map-structure** is an abstract data structure build of
   and a mapping from these *keys* to *list-map-structures*.
 
 Every aREF document MUST be given as *map*. Applications MAY restrict aREF
-documents to non-circular *list-map-structures*.
+documents to non-circular *list-map-structures*. All non-circular
+*list-map-structures* can be serialized in JSON and YAML, amomg other formats.
 
 # Encoding
 
-An *RDF graph* in aREF is encoded as a [*list-map-structure*] that is either a
-[*subject map*], or a [*predicate map*] that MUST contain the special *key*
-"`_id`". The special key "`_ns`" MAY further be used to specify a [*namespace
-map*].
-
-## Subject maps
-
-[*subject map*]: #subject-maps
-
-A **subject map** is a *map* with the following constraints:
-
--   Every *key*, except the optional key "`_ns`", is an encoded IRI (as
-    [*absolute IRI*], as [*prefixed name*], or as [*plain name*]), or a 
-    [*blank node identifier*]. These *keys* encode *subjects* of *triples*
-    encoded by the *subject map*.
-
--   Every value, except if mapped from the optional key "`_ns`", is an 
-    [*predicate map*] with the following constraint:
-
-    -   It MUST NOT contain the special key "`_ns`".
-
-    -   If it contains the special *key* "`_id`" then the *key* must
-        be mapped to an encoding of the same subject IRI.
-
-## Predicate maps
-
-[*predicate map*]: #predicate-maps
-
-A **predicate map** is a *map* with the following constraints:
-
--   Every *key*, except the optional keys "`_id`" and "`_ns`", MUST be an
-    encoded IRI (as [*absolute IRI*], as [*prefixed name*], or as 
-    [*plain name*]). These *keys* encode *predicates* of *triples* encoded 
-    by the *predicate map*.
-
--   Every value, except if mapped from the optional keys "`_id`" or "`_ns`",
-    must be an [*encoded object*].
-
--   The optional key "`_id`", if given, is mapped to an encoded IRI 
-    (as [*absolute IRI*] or as [*prefixed name*]) or to a 
-    [*blank node identifier*]. This value specifies the *subject* of all 
-    *triples* encoded by the *predicate map*. 
-    If the key does not exist, the *subject* is either given implicitly
-    because the *predicate map* is used as part of a [*subject map*] or
-    the *subject* is a *blank node*.
-
-## Namespace maps
-
-[*namespace map*]: #namespace-maps
-
-A **namespace map** in aREF is either a *string* that defines a default
-namespace, or a *map* where every *key* conforms to the `prefix` syntax rule
-(see [*prefixed name*]) and is mapped to an IRI, given as string that conforms
-to the `IRI` syntax rule from [RFC 3987]. The IRI is called **namespace URI**.
-A *namespace map* can be specified both, explicitly with the special key
-"`_ns`" in a [*subject map*] or in a [*predicate map*], and implicitly by
-assuming a [predefined namespace map].
-
-## Encoded objects
-
-[*encoded object*]: #encoded-objects
-
-An **encoded object** in aREF represents one or multiple *objects* of RDF
-*triples* with same *subject* and same *predicate*. An encoded object can be
-any of:
-
--   a IRI, encoded as [*absolute IRI*] or as [*prefixed name*],
--   a [literal node](#literal-nodes), encoded as string,
--   a [blank node](#blank-nodes), encoded as string,
--   a *list* with each element is a string encoding an RDF *object*
-    with any of the three methods above.
-
-A *list* represents a set of RDF objects, so the order of elements is
-irrelevant. A list SHOULD NOT contain the same RDF object multiple times
-(as same string or in different encoding forms).
-
-The object of a single RDF triple can be encoded both as string and as list of
-one string. The former form is RECOMMENDED but the latter form is possible as
-well, as known from [RDF/JSON].
-
-***TODO**: restrict encoding of IRI in contrast to IRI as subject or predicate.*
-
 ## IRIs
 
-An *IRI* in aREF is encoded as string, either in form of an [*absolute
-IRI*](#absolute-iris) or as [*prefixed name*](#prefixed-names).
+An *IRI* in aREF is encoded as *string*,
 
-### Absolute IRIs
+* either as *plain IRI*
+* or as *explicit IRI* enclosed in angular brackets
+* or as [*prefixed name*](#prefixed-names).
 
-[*absolute IRI*]: #absolute-iris
+### Plain IRIs
 
-An **absolute IRI** is either an IRI enclosed in angle brackets (`<` and `>`),
+[*plain IRI*]: #plain-iris
+
+An **plain IRI** is either an IRI enclosed in angle brackets (`<` and `>`),
 or an IRI that also matches the syntax rule `IRIlike` but not the syntax rule
 `literalNode`.
 
@@ -192,7 +115,7 @@ or an IRI that also matches the syntax rule `IRIlike` but not the syntax rule
 
       LOWERCASE     = %x61-%x7A     ; a-z
 
-***TODO:** loose restriction for absolute IRIs as subject and as predicates
+***TODO:** loose restriction for plain IRIs as subject and as predicates
 because literals are not allwed at this place anyway*.
 
 ### Prefixed names
@@ -200,19 +123,19 @@ because literals are not allwed at this place anyway*.
 [*prefixed name*]: #prefixed-names
 [*plain name*]: #prefixed-names
 
-A **prefixed name** consists of a **prefix** and a **name** separated by a
-colon (`:`) or by an underscore (`_`): 
+A **prefixed name** consists of a **prefix** and a **name** separated by an
+underscore (`_`): 
 
-      prefixedName  = prefix ( ":" / "_" ) name
-
-***TODO:** disallow underscore in an [*encoded object*]*
+      prefixedName  = prefix "_" name
 
 A **plain name** consists of an optional separator and a name:
 
-      plainName     = [ ":" / "_" ] name
+      plainName     = [ "_" ] name
 
 The special *plain name* “`a`” if given as *key* in a *predicate map* is always
 an alias for the IRI "`http://www.w3.org/1999/02/22-rdf-syntax-ns#type`".
+
+*TODO: disallow plain names?*
 
 The prefix is a string starting with a
 lowercase letter (`a-z`) optionally followed by a sequence of lowercase letters
@@ -242,6 +165,91 @@ and JSON-LD. The restriction allows for both, URI scheme names as URI prefixes
 Applications SHOULD warn about unknown prefixes. Applications MAY ignore all
 triples that include a node with an unknown prefix.
 
+
+## Graphs
+
+An *RDF graph* in aREF is encoded as a [*list-map-structure*] that is either a
+[*subject map*], or a [*predicate map*] that MUST contain the special *key*
+"`_id`". The special key "`_ns`" MAY further be used to specify a [*namespace
+map*].
+
+## Subject maps
+
+[*subject map*]: #subject-maps
+
+A **subject map** is a *map* with the following constraints:
+
+-   Every *key*, except the optional key "`_ns`", is an encoded IRI (as
+    [*plain IRI*], as [*prefixed name*], or as [*plain name*]), or a 
+    [*blank node identifier*]. These *keys* encode *subjects* of *triples*
+    encoded by the *subject map*.
+
+-   Every value, except if mapped from the optional key "`_ns`", is an 
+    [*predicate map*] with the following constraint:
+
+    -   It MUST NOT contain the special key "`_ns`".
+
+    -   If it contains the special *key* "`_id`" then the *key* must
+        be mapped to an encoding of the same subject IRI.
+
+## Predicate maps
+
+[*predicate map*]: #predicate-maps
+
+A **predicate map** is a *map* with the following constraints:
+
+-   Every *key*, except the optional keys "`_id`" and "`_ns`", MUST be an
+    encoded IRI (as [*plain IRI*], as [*prefixed name*], or as 
+    [*plain name*]). These *keys* encode *predicates* of *triples* encoded 
+    by the *predicate map*.
+
+-   Every value, except if mapped from the optional keys "`_id`" or "`_ns`",
+    must be an [*encoded object*].
+
+-   The optional key "`_id`", if given, is mapped to an encoded IRI 
+    (as [*plain IRI*] or as [*prefixed name*]) or to a 
+    [*blank node identifier*]. This value specifies the *subject* of all 
+    *triples* encoded by the *predicate map*. 
+    If the key does not exist, the *subject* is either given implicitly
+    because the *predicate map* is used as part of a [*subject map*] or
+    the *subject* is a *blank node*.
+
+## Namespace maps
+
+[*namespace map*]: #namespace-maps
+
+A **namespace map** in aREF is either a *string* that defines a default
+namespace, or a *map* where every *key* conforms to the `prefix` syntax rule
+(see [*prefixed name*]) and is mapped to an IRI, given as string that conforms
+to the `IRI` syntax rule from [RFC 3987]. The IRI is called **namespace URI**.
+A *namespace map* can be specified both, explicitly with the special key
+"`_ns`" in a [*subject map*] or in a [*predicate map*], and implicitly by
+assuming a [predefined namespace map].
+
+## Encoded objects
+
+[*encoded object*]: #encoded-objects
+
+An **encoded object** in aREF represents one or multiple *objects* of RDF
+*triples* with same *subject* and same *predicate*. An encoded object can be
+any of:
+
+-   a IRI, encoded as [*plain IRI*] or as [*prefixed name*],
+-   a [literal node](#literal-nodes), encoded as string,
+-   a [blank node](#blank-nodes), encoded as string,
+-   a *list* with each element is a string encoding an RDF *object*
+    with any of the three methods above.
+
+A *list* represents a set of RDF objects, so the order of elements is
+irrelevant. A list SHOULD NOT contain the same RDF object multiple times
+(as same string or in different encoding forms).
+
+The object of a single RDF triple can be encoded both as string and as list of
+one string. The former form is RECOMMENDED but the latter form is possible as
+well, as known from [RDF/JSON].
+
+***TODO**: restrict encoding of IRI in contrast to IRI as subject or predicate.*
+
 ## Literal nodes
 
 A literal node in aREF is encoded as string in one of three forms:
@@ -253,7 +261,7 @@ A literal node in aREF is encoded as string in one of three forms:
 A *simple literal* with datatype `http://www.w3.org/2001/XMLSchema#string` MAY
 be encoded as literal node with datatype or by appending an at sign (`@`) to
 the simple literal’s string. If the simple literal’s string neither ends with
-an at sign (`@`) nor matches to any of the syntax rules of [*absolute IRI*]
+an at sign (`@`) nor matches to any of the syntax rules of [*plain IRI*]
 (`absoluteIRI`), [*prefixed name*] (`prefixedName`) and [*identified blank
 node*] (`blankNode`), the string SHOULD be used as given. 
 
@@ -325,34 +333,15 @@ owl     http://www.w3.org/2002/07/owl#
 xsd     http://www.w3.org/2001/XMLSchema#
 ------- --------------------------------------------
 
-The following [*namespace map*] SHOULD also be assumed implicitly:
-
-prefix  namespace URI                                   ontology
-------- ----------------------------------------------- ------------------------------------------------------------ 
-bibo    http://purl.org/ontology/bibo/                  The Bibliographic Ontology
-cc      http://creativecommons.org/ns#                  Creative Commons Rights Expression Language
-dc	    http://purl.org/dc/elements/1.1/                DCMI Metadata Terms    
-dcmit   http://purl.org/dc/dcmitype/                    DCMI Type Vocabulary
-dct     http://purl.org/dc/terms/                       DCMI Metadata Terms
-foaf    http://xmlns.com/foaf/0.1/                      Friend of a Friend vocabulary
-geo     http://www.w3.org/2003/01/geo/wgs84_pos#        WGS84 Geo Positioning
-gr      http://purl.org/goodrelations/v1#               The GoodRelations Ontology for Semantic Web-based E-Commerce
-org     http://www.w3.org/ns/org#                       Core organization ontology
-schema  http://schema.org/                              Schema.org vocabulary
-sioc    http://rdfs.org/sioc/ns#                        Semantically-Interlinked Online Communities
-skos    http://www.w3.org/2004/02/skos/core#            Simple Knowledge Organization System
-time    http://www.w3.org/2006/time#                    Time Ontology
-vann    http://purl.org/vocab/vann/                     VANN: A vocabulary for annotating vocabulary descriptions
-vcard   http://www.w3.org/2006/vcard/ns#                An Ontology for vCards
-void    http://rdfs.org/ns/void#                        Vocabulary of Interlinked Datasets
-vs      http://www.w3.org/2003/06/sw-vocab-status/ns#   SemWeb Vocab Status ontology
-------- ----------------------------------------------- ------------------------------------------------------------ 
-
 Applications MAY predefine additional implicit namespace maps. Mappings in an
 explicit [*namespace map*] precedence over implicit mappings.
 
-***TODO:** possibly add `dcat`, `prov`, `dbp`, `dbo`, `obo`, `rss`..., possibly remove `sioc`?
-Sources: http://stats.lod2.eu/vocabularies, http://prefix.cc/popular/all.txt, http://www.w3.org/2011/rdfa-context/rdfa-1.1 ...*
+See <http://prefix.cc> and [RDF::NS] for additional common namespace mappings.
+
+Other sources: 
+<http://stats.lod2.eu/vocabularies>,
+<http://prefix.cc/popular/all.txt>, 
+<http://www.w3.org/2011/rdfa-context/rdfa-1.1>, ...
 
 # References
 
@@ -428,6 +417,10 @@ Sources: http://stats.lod2.eu/vocabularies, http://prefix.cc/popular/all.txt, ht
 
 -   Jakob Voß: *RDF-aREF*. CPAN Perl Module.
     <https://metacpan.org/release/RDF-aREF>
+
+-   JSON ...
+
+-   YAML ...
 
 [RFC 2119]: http://tools.ietf.org/html/rfc2119
 [RFC 4151]: http://tools.ietf.org/html/rfc4151
