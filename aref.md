@@ -95,7 +95,7 @@ An *IRI* in aREF is encoded as *string*,
 
 * either as *plain IRI*
 * or as *explicit IRI* enclosed in angular brackets
-* or as [*prefixed name*](#prefixed-names).
+* or as [*qname*](#qnames).
 
 ### Plain IRIs
 
@@ -118,24 +118,17 @@ or an IRI that also matches the syntax rule `IRIlike` but not the syntax rule
 ***TODO:** loose restriction for plain IRIs as subject and as predicates
 because literals are not allwed at this place anyway*.
 
-### Prefixed names
+### QNames
 
-[*prefixed name*]: #prefixed-names
-[*plain name*]: #prefixed-names
+[*qname*]: #qnames
 
-A **prefixed name** consists of a **prefix** and a **name** separated by an
-underscore (`_`): 
+A **qname** consists of a **prefix** and a **name** separated by an underscore
+(`_`): 
 
-      prefixedName  = prefix "_" name
+      qName  = prefix "_" name
 
-A **plain name** consists of an optional separator and a name:
-
-      plainName     = [ "_" ] name
-
-The special *plain name* “`a`” if given as *key* in a *predicate map* is always
+The special string “`a`” if given as *key* in a *predicate map* is always
 an alias for the IRI "`http://www.w3.org/1999/02/22-rdf-syntax-ns#type`".
-
-*TODO: disallow plain names?*
 
 The prefix is a string starting with a
 lowercase letter (`a-z`) optionally followed by a sequence of lowercase letters
@@ -160,7 +153,7 @@ and JSON-LD. The restriction allows for both, URI scheme names as URI prefixes
 (e.g. "`geo:Point`" and "`tag:Tag`") and absolute URI references such as
 "`geo:48.2010,16.3695,183`" ([RFC 5870]) and "`tag:yaml.org,2002:int`" ([RFC 4151]).
 
-***TODO:** See [*namespace map*] for how to construct IRIs from prefixed names*
+***TODO:** See [*namespace map*] for how to construct IRIs from qnames*
 
 Applications SHOULD warn about unknown prefixes. Applications MAY ignore all
 triples that include a node with an unknown prefix.
@@ -180,7 +173,7 @@ map*].
 A **subject map** is a *map* with the following constraints:
 
 -   Every *key*, except the optional key "`_ns`", is an encoded IRI (as
-    [*plain IRI*], as [*prefixed name*], or as [*plain name*]), or a 
+    [*plain IRI*] or as [*qname*]), or a 
     [*blank node identifier*]. These *keys* encode *subjects* of *triples*
     encoded by the *subject map*.
 
@@ -199,15 +192,14 @@ A **subject map** is a *map* with the following constraints:
 A **predicate map** is a *map* with the following constraints:
 
 -   Every *key*, except the optional keys "`_id`" and "`_ns`", MUST be an
-    encoded IRI (as [*plain IRI*], as [*prefixed name*], or as 
-    [*plain name*]). These *keys* encode *predicates* of *triples* encoded 
+    encoded IRI (as [*plain IRI*], or as [*qname*]). These *keys* encode *predicates* of *triples* encoded 
     by the *predicate map*.
 
 -   Every value, except if mapped from the optional keys "`_id`" or "`_ns`",
     must be an [*encoded object*].
 
 -   The optional key "`_id`", if given, is mapped to an encoded IRI 
-    (as [*plain IRI*] or as [*prefixed name*]) or to a 
+    (as [*plain IRI*] or as [*qname*]) or to a 
     [*blank node identifier*]. This value specifies the *subject* of all 
     *triples* encoded by the *predicate map*. 
     If the key does not exist, the *subject* is either given implicitly
@@ -220,7 +212,7 @@ A **predicate map** is a *map* with the following constraints:
 
 A **namespace map** in aREF is either a *string* that defines a default
 namespace, or a *map* where every *key* conforms to the `prefix` syntax rule
-(see [*prefixed name*]) and is mapped to an IRI, given as string that conforms
+(see [*qname*]) and is mapped to an IRI, given as string that conforms
 to the `IRI` syntax rule from [RFC 3987]. The IRI is called **namespace URI**.
 A *namespace map* can be specified both, explicitly with the special key
 "`_ns`" in a [*subject map*] or in a [*predicate map*], and implicitly by
@@ -234,7 +226,7 @@ An **encoded object** in aREF represents one or multiple *objects* of RDF
 *triples* with same *subject* and same *predicate*. An encoded object can be
 any of:
 
--   a IRI, encoded as [*plain IRI*] or as [*prefixed name*],
+-   a IRI, encoded as [*plain IRI*] or as [*qname*],
 -   a [literal node](#literal-nodes), encoded as string,
 -   a [blank node](#blank-nodes), encoded as string,
 -   a *list* with each element is a string encoding an RDF *object*
@@ -262,13 +254,13 @@ A *simple literal* with datatype `http://www.w3.org/2001/XMLSchema#string` MAY
 be encoded as literal node with datatype or by appending an at sign (`@`) to
 the simple literal’s string. If the simple literal’s string neither ends with
 an at sign (`@`) nor matches to any of the syntax rules of [*plain IRI*]
-(`absoluteIRI`), [*prefixed name*] (`prefixedName`) and [*identified blank
+(`absoluteIRI`), [*qname*] (`qName`) and [*identified blank
 node*] (`blankNode`), the string SHOULD be used as given. 
 
       plainLiteral   = string "@" / string
                        ; MUST NOT end with "@"
                        ; MUST NOT match syntax rule 
-                         explicitIRI, IRIlike, prefixedName, or blankNode
+                         explicitIRI, IRIlike, qName, or blankNode
 
 ### Literal nodes with language tag
 
@@ -288,9 +280,9 @@ language tags as defined in [BCP 47].
 
 A literal node with *datatype* is encoded by appending one or two carets (`^`)
 followed by the datatype’s IRI either enclosed in “`<`” and “`>`” or as
-[*prefixed name*]:
+[*qname*]:
 
-      datatypeString = string "^" [ "^" ] ( prefixedName / "<" IRI ">" )
+      datatypeString = string "^" [ "^" ] ( qName / "<" IRI ">" )
 
 Note that [Turtle] only supports the character sequence “`^^`” instead of a
 single “`^`” to serialize literal nodes with datatype.
