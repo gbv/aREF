@@ -336,6 +336,14 @@ A **predicate map** is a [*map*] with the following constraints:
 5.  Every value of a [*key*] that encodes a [*predicate*] MUST BE an
     [*encoded object*].
 
+
+<div class="example"
+```yaml
+_id: http://example.org/places#BrewEats
+a: [ "http://schema.org/Restaurant", "http://schema.org/Brewery" ]
+```
+</div>
+
 ----
 
 *TODO: revise from here*
@@ -362,6 +370,8 @@ irrelevant. A list SHOULD NOT contain the same RDF object multiple times
 The object of a single RDF triple can be encoded both as [*string*] and as list
 of one string. The former form is RECOMMENDED but the latter form is possible
 as well, as known from [RDF/JSON].
+
+null values and empty lists MUST be ignored.
 
 ## Namespace maps
 
