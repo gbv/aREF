@@ -133,9 +133,7 @@ optionally followed by a sequence of lowercase letters and digits (`0-9`).
 
       prefix = LOWERCASE *( LOWERCASE / DIGIT )    ; a-z *( a-z / 0-9 )
 
-The *localName* is a [*string*] that conforms to the following syntax. Note
-that this rule is more restrictive than corresponding definitions in Turtle and
-JSON-LD. 
+The *localName* is a [*string*] that conforms to the following syntax. 
 
       localName     = nameStartChar *(nameChar)
 
@@ -146,6 +144,11 @@ JSON-LD.
                       %x10000-%xEFFFF
 
       nameChar      = nameStartChar / '-' / DIGIT / %xB7 / %x0300-%x036F / %x203F-%x2040
+
+<div class="note">
+The syntax rule `localName` is  more restrictive than corresponding definitions
+in [Turtle] and [JSON-LD].
+</div>
 
 <!--
 The restriction allows for both, URI scheme names as URI prefixes
@@ -173,10 +176,12 @@ A [*literal node*] with [*language tag*] is encoded by appending an at sign
 
       languageTag    = 2*8(ALPHA) *( "-" 1*8( ALPHA / DIGIT ) )
 
-Note that the syntax rule of a language tag in aREF is slightly more
+<div class="note">
+The syntax rule `languageTag` is slightly more
 restrictive than the syntax of a language tag in [Turtle] but less restrictive
 than the syntax of a language tag in JSON-LD, which refers to well-formed
 language tags as defined in [BCP 47].
+</div>
 
 ### Literal nodes with datatype
 
@@ -185,7 +190,9 @@ followed by the datatype’s [*IRI*] either [*explicit IRI*] or as [*qName*]:
 
       datatypeString = string "^" ( qName / explicitIRI )
 
-Note that [Turtle] uses the character sequence “`^^`” instead of a single “`^`”.
+<div class="note">
+[Turtle] uses the character sequence “`^^`” instead of a single “`^`”.
+</div>
 
 ### Simple literals
 
@@ -206,6 +213,7 @@ An at sign ("`@`") can always be appended to the node’s [*string*] to distingu
 from other syntax rules. The at sign MUST be appended if the simple literal
 ends with an at sign.
 
+<div class="example">
 
  aRef string         RDF literal (Turtle syntax)
  ------------------- ----------------------------------
@@ -221,104 +229,118 @@ ends with an at sign.
  Ninja@en            `"Ninja"@en`
  Ninja@en@           `"Ninja@en"`
 
-:Examples of RDF literals encoded as aRef strings:
+</div>
+
+## Blank nodes
+
+A [*blank node*] is encoded 
+
+* either as [*predicate map*] without the key "`_id`",
+* or as **blank node identifier**, that is a [*string*] which starts with "`_:`", 
+  followed by a alphanumerical label (syntax rule `blankNode`),
+* or as [*predicate map*] with the key "`_id`" mapped to [*blank node identifier*].
+
+```
+blankNode      = "_:" 1*( ALPHA / DIGIT )
+```
+
+Within the scope of the same [*RDF graph*], equal *blank node identifiers* MUST
+refer to the same *blank node*. *Blank node identifiers* SHOULD NOT be shared
+among different *RDF graphs*. 
+
+In the simplest case, a *blank node* in aREF can be encoded as an empty *map*.
+
+<div class="example">
+```yaml
+_ns:
+    foaf: http://xmlns.com/foaf/0.1/
+_:alice:
+    foaf_knows: _:bob
+_:bob:
+    foaf_knows:
+        _id: _:alice
+```
+</div>
+
+<div class="example">
+```yaml
+_ns:
+    foaf: http://xmlns.com/foaf/0.1/
+_:someone
+    foaf_knows:
+        foaf_name: "Bob"
+```
+</div>
+
+<div class="note">
+The syntax rule `blankNode` is more restrictive than the rule of
+blank node identifiers in [Turtle] and in [JSON-LD].
+</div>
+
+## Graphs
+
+An [*RDF graph*] in aREF is encoded as a [*list-map-structure*] that is
+
+* either a [*subject map*],
+* or a [*predicate map*] that MUST contain the special *key* "`_id`".
+
+### Subject maps
+
+A **subject map** is a [*map*] with the following constraints:
+
+1.  The [*subject map*] MUST NOT contain the [*key*] "`_id`".
+
+2.  The [*subject map*] MAY contain the key [*key*] "`_ns`", mapped to
+    a [*namespace map*].
+
+3.  Additional keys, starting with `_` SHOULD be ignored.
+
+4.  Every [*key*], unless it starts with "`_`", is either a [*plain IRI*] or a
+    [*qName*] or a [*blank node*]. These [*keys*] encode the [*subjects*] of 
+    RDF [*triples*].
+
+5.  Every value of a [*key*] that encodes a [*subject*] MUST BE a 
+    [*predicate map*] that either does not contain the [*key*] "`_id`"
+    or maps the [*key*] "`id`" to an encoding of the same subject.
+
+<div class="example">
+```yaml
+"http://example.org/alice":
+    foaf_knows: http://example.org/bob
+    _id: http://example.org/alice  # redundant
+```
+</div>
+
+### Predicate maps
+
+A [*predicate map*] encodes a set of RDF triples with same [*subject*]. The
+subject is given by context, if the [*predicate map*] is part of a [*subject
+map*], or explicitly with the [*key*] "`_id`", or the subject is a [*blank
+node*].
+
+A **predicate map** is a [*map*] with the following constraints:
+
+1.  The optional [*key*] "`_id`", if given, MUST be mapped to a [*plain IRI*], 
+    a [*qName*], or a [*blank node*].
+
+2.  The optional [*key*] "`_ns`", if given, MUST be mapped to a 
+    [*namespace map*].
+
+3.  Additional keys, starting with `_` SHOULD be ignored.
+
+4.  Every [*key*], unless it starts with "`_`", MUST be either a 
+    [*plain IRI*] or a [*qName*], or the value "`a`" that stands 
+    for the [*IRI*] "`http://www.w3.org/1999/02/22-rdf-syntax-ns#type`".
+    These [*keys*] encode [*predicates*] of [*triples*].
+
+5.  Every value of a [*key*] that encodes a [*predicate*] MUST BE an
+    [*encoded object*].
 
 ----
 
 *TODO: revise from here*
 
-## Blank nodes
-
-A [*blank node*] is encoded as [*string*] in form of a *blank node
-identifier* or by using a [*predicate map*] that either does not contain the
-special key "`_id`" or contains the special key "`_id`" mapped to a *blank node
-identifier*.
-
-A **blank node identifier** is a string conforming to the following syntax
-rule. Note that the syntax rule `blankNode` is more
-restrictive than the rule of blank node identifiers in [Turtle] and in
-[JSON-LD]:
-
-      blankNode      = "_:" 1*( ALPHA / DIGIT )
-
-Within the scope of the same [*RDF graph*], equal *blank node identifiers* MUST
-refer to the same *blank node*. *Blank node identifiers* MUST NOT be shared
-among different *RDF graphs*. 
-
-In the simplest case, a *blank node* in aREF can be encoded as an empty *map*.
-
-## Graphs
-
-An *RDF graph* in aREF is encoded as a [*list-map-structure*] that is
-
-* either a [*subject map*],
-* or a [*predicate map*] that MUST contain the special *key* "`_id`".
-
-The special key "`_ns`" MAY further be used to specify a [*namespace map*].
-
-## Subject maps
-
-[*subject map*]: #subject-maps
-
-A **subject map** is a *map* with the following constraints:
-
--   Every *key*, except the optional key "`_ns`", is an encoded IRI (as
-    [*plain IRI*] or as [*qName*]), or a 
-    [*blank node identifier*]. These *keys* encode *subjects* of *triples*
-    encoded by the *subject map*.
-
--   Every value, except if mapped from the optional key "`_ns`", is an 
-    [*predicate map*] with the following constraint:
-
-    -   It MUST NOT contain the special key "`_ns`".
-
-    -   If it contains the special *key* "`_id`" then the *key* must
-        be mapped to an encoding of the same subject IRI.
-
-## Predicate maps
-
-[*predicate map*]: #predicate-maps
-
-A **predicate map** is a *map* with the following constraints:
-
-1. Every [*key*] MUST be one of 
-    
-    - the optional key "`_id`" 
-    - the optional key "`_ns`"
-    - an encoded IRI (as [*plain IRI*], or as [*qName*])
-
-These *keys* encode *predicates* of *triples* encoded 
-by the *predicate map*.
-
-Additional keys, starting with `_` SHOULD be ignored.
-
-2.  Every value, except if mapped from the optional keys "`_id`" or "`_ns`",
-    must be an [*encoded object*].
-
-3.  The optional key "`_id`", if given, is mapped to an encoded IRI 
-    (as [*plain IRI*] or as [*qName*]) or to a 
-    [*blank node identifier*]. This value specifies the *subject* of all 
-    *triples* encoded by the *predicate map*. 
-    If the key does not exist, the *subject* is either given implicitly
-    because the *predicate map* is used as part of a [*subject map*] or
-    the *subject* is a *blank node*.
-
-The special [*string*] “`a`” if given as *key* in a *predicate map* is always
-an alias for the IRI "`http://www.w3.org/1999/02/22-rdf-syntax-ns#type`".
-
-## Namespace maps
-
-[*namespace map*]: #namespace-maps
-
-A **namespace map** in aREF is either a [*string*] that defines a default
-namespace, or a *map* where every *key* conforms to the `prefix` syntax rule
-(see [*qName*]) and is mapped to an IRI, given as [*string*] that conforms
-to the `IRI` syntax rule from [RFC 3987]. The IRI is called **namespace URI**.
-A *namespace map* can be specified both, explicitly with the special key
-"`_ns`" in a [*subject map*] or in a [*predicate map*], and implicitly by
-assuming a [predefined namespace map].
-
-## Encoded objects
+### Encoded objects
 
 [*encoded object*]: #encoded-objects
 
@@ -326,11 +348,12 @@ An **encoded object** in aREF represents one or multiple *objects* of RDF
 *triples* with same *subject* and same *predicate*. An encoded object can be
 any of:
 
--   a IRI, encoded as [*plain IRI*] or as [*qName*],
+-   a IRI, encoded as [*plain IRI*], as [*explicit IRI*] or as [*qName*],
 -   a [*literal node*], encoded as [*string*],
 -   a [*blank node*], encoded as [*string*],
 -   a *list* with each element is a [*string*] encoding an RDF *object*
     with any of the three methods above.
+-   a [*predicate map*] 
 
 A *list* represents a set of RDF objects, so the order of elements is
 irrelevant. A list SHOULD NOT contain the same RDF object multiple times
@@ -340,11 +363,15 @@ The object of a single RDF triple can be encoded both as [*string*] and as list
 of one string. The former form is RECOMMENDED but the latter form is possible
 as well, as known from [RDF/JSON].
 
-***TODO**: restrict encoding of IRI in contrast to IRI as subject or predicate.*
+## Namespace maps
 
-## Predefined namespace maps
-
-[predefined namespace map]: #predefined-namespace-maps
+A **namespace map** in aREF is either a [*string*] that refers to a namespace
+mapping defines elsewhere, or a *map* where every *key* conforms to the
+`prefix` syntax rule (see [*qName*]) and is mapped to an IRI, given as
+[*string*] that conforms to the `IRI` syntax rule from [RFC 3987]. The IRI is
+called **namespace URI**. A *namespace map* can be specified both, explicitly
+with the special key "`_ns`" in a [*subject map*] or in a [*predicate map*],
+and implicitly by assuming a predefined namespace map:
 
 The following [*namespace map*] MUST be assumed implicitly:
 
@@ -358,6 +385,8 @@ xsd     http://www.w3.org/2001/XMLSchema#
 
 Applications MAY predefine additional implicit namespace maps. Mappings in an
 explicit [*namespace map*] precedence over implicit mappings.
+
+An aREF document MUST NOT contain more than one namespace map.
 
 See <http://prefix.cc> and [RDF::NS] for additional common namespace mappings.
 
@@ -467,10 +496,18 @@ Other sources:
 
 <!-- `appendix.md`{.include} -->
 
+[*RDF graph*]: #rdf-data
 [*simple literal*]: #rdf-data
 [*language tag*]: #rdf-data
 [*datatype*]: #rdf-data
 [*blank node*]: #rdf-data
+
+[*map*]: #list-map-structures
+[*key*]: #list-map-structures
+[*keys*]: #list-map-structures
+[*subjects*]: #rdf-data
+[*triples*]: #rdf-data
+[*namespace map*]: #namespace-maps
 
 [*explicit IRI*]: #explicit-iris
 [*qName*]: #qnames
@@ -480,6 +517,9 @@ Other sources:
 
 [*identified blank node*]: #blank-nodes
 [*blank node identifier*]: #blank-nodes
+
+[*subject map*]: #subject-maps
+[*predicate map*]: #predicate-maps
 
 
 [*namespace URI*]: #namespace-maps
