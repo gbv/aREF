@@ -86,7 +86,11 @@ A **list-map-structure** is an abstract data structure build of
 
 Every aREF document MUST be given as *map*. Applications MAY restrict aREF
 documents to non-circular *list-map-structures*. All non-circular
-*list-map-structures* can be serialized in JSON and YAML, amomg other formats.
+*list-map-structures* can be serialized in JSON and YAML.
+
+Applications MAY support special null values, disjoint from [*strings*], as
+element in a [*list*] and/or mapped to in a [*map*]. These null values MUST be
+ignored on decoding aREF.
 
 # Encoding
 
@@ -171,6 +175,22 @@ A [*literal node*] with [*language tag*] is encoded by appending an at sign
 
       languageTag    = 2*8(ALPHA) *( "-" 1*8( ALPHA / DIGIT ) )
 
+<div class="example">
+```json
+{
+  "_id": "http://example.com/MyResource",
+  "skos_prefLabel": [
+    "east@en",
+    "Osten@de"
+    "東@ja",
+    "東@ja-Hani",
+    "ヒガシ@ja-Kana",
+    "higashi@ja-Latn"
+  ]
+}
+```
+</div>
+
 <div class="note">
 The syntax rule `languageTag` is slightly more
 restrictive than the syntax of a language tag in [Turtle] but less restrictive
@@ -184,6 +204,18 @@ A [*literal node*] with *datatype* is encoded by appending a caret ("`^`")
 followed by the datatype’s [*IRI*] either [*explicit IRI*] or as [*qName*]:
 
       datatypeString = string "^" ( qName / explicitIRI )
+
+<div class="example">
+```json
+{
+  "_id": "http://example.org/",
+  "dct_modified": [
+    "2010-05-29T14:17:39+02:00^xsd_dateDate",
+    "2010-05-29^<http://www.w3.org/2001/XMLSchema#date>"
+  ]
+}
+```
+</div>
 
 <div class="note">
 [Turtle] uses the character sequence “`^^`” instead of a single “`^`”.
@@ -210,19 +242,19 @@ ends with an at sign.
 
 <div class="example">
 
- aRef string         RDF literal (Turtle syntax)
- ------------------- ----------------------------------
- @                   `""`
- *empty string*      `""`
- \^xsd_string        `""`
- @@                  `"@"`
- @\^xsd_string       `"@"`
- alice@en            `"alice"@en`
- alice@example.com   `"alice@example.com"`
- 123                 `"123"`
- 忍者@ja             `"忍者"@ja`
- Ninja@en            `"Ninja"@en`
- Ninja@en@           `"Ninja@en"`
+ aRef string           RDF literal (Turtle syntax)
+ --------------------- ----------------------------------
+ `@`                   `""`
+ `*empty string*`      `""`
+ `^xsd_string`         `""`
+ `@@`                  `"@"`
+ `@^xsd_string`        `"@"`
+ `alice@en`            `"alice"@en`
+ `alice@example.com`   `"alice@example.com"`
+ `123`                 `"123"`
+ `忍者@ja`             `"忍者"@ja`
+ `Ninja@en`            `"Ninja"@en`
+ `Ninja@en@`           `"Ninja@en"`
 
 </div>
 
@@ -332,43 +364,48 @@ A **predicate map** is a [*map*] with the following constraints:
     [*encoded object*].
 
 
-<div class="example"
-```yaml
-_id: http://example.org/places#BrewEats
-a: [ "http://schema.org/Restaurant", "http://schema.org/Brewery" ]
+<div class="example">
+```json
+{
+  "_id": "http://example.org/places#BrewEats",
+  "a": [ "http://schema.org/Restaurant", "http://schema.org/Brewery" ]
+}
 ```
 </div>
-
-----
-
-*TODO: revise from here*
 
 ### Encoded objects
 
 [*encoded object*]: #encoded-objects
 
-An **encoded object** in aREF represents one or multiple *objects* of RDF
-*triples* with same *subject* and same *predicate*. An encoded object can be
-any of:
+An **encoded object** encodes zero or more RDF [*objects*] with same
+[*subject*] and same [*predicate*]. An [*encoded object*] MUST BE one of, or a
+[*list*] of any of the following:
 
--   a IRI, encoded as [*plain IRI*], as [*explicit IRI*] or as [*qName*],
--   a [*literal node*], encoded as [*string*],
--   a [*blank node*], encoded as [*string*],
--   a *list* with each element is a [*string*] encoding an RDF *object*
-    with any of the three methods above.
--   a [*predicate map*] 
+* a [*plain IRI*], [*explicit IRI*], or [*qName*] to encode an [*IRI*]
+* a [*string*] that conforms to syntax rule `literalNode` to encode a 
+  [*literal node*] (see [literal nodes](#literal-nodes))
+* a [*string*] that conforms to syntax rule `blankNode` to encode a
+  [*blank node*] (see [blank nodes](#blank-nodes))
+* a [*predicate map*]
 
-A *list* represents a set of RDF objects, so the order of elements is
-irrelevant. A list SHOULD NOT contain the same RDF object multiple times
-(as same string or in different encoding forms).
+A [*list*] as [*encoded object*] represents a set of [*objects*], so the order
+of elements is irrelevant and duplicates SHOULD NOT be included, independent
+from different encoding forms.
 
-The object of a single RDF triple can be encoded both as [*string*] and as list
-of one string. The former form is RECOMMENDED but the latter form is possible
-as well, as known from [RDF/JSON].
+<div class="example">
+The following encoded objects, expressed in JSON, refer to the same [*IRI*]:
 
-null values and empty lists MUST be ignored.
+* `http://example.org/`
+* `<http://example.org/>`
+* `{ "_id": "http://example.org/" }`
+* `[ "http://example.org/" ]`
+* `[ "<http://example.org/>" ]`
+* `[ { "_id": "http://example.org/" } ]`
+</div>
 
 ## Namespace maps
+
+<!-- TODO: this section may be improved -->
 
 A **namespace map** in aREF is either a [*string*] that refers to a namespace
 mapping defines elsewhere, or a *map* where every *key* conforms to the
@@ -378,7 +415,8 @@ called **namespace URI**. A *namespace map* can be specified both, explicitly
 with the special key "`_ns`" in a [*subject map*] or in a [*predicate map*],
 and implicitly by assuming a predefined namespace map:
 
-The following [*namespace map*] MUST be assumed implicitly:
+The following [*namespace map*] MUST be assumed implicitly, unless explicitly
+set to other namespace URIs in a namespace map:
 
 prefix  namespace URI
 ------- --------------------------------------------
@@ -393,20 +431,23 @@ explicit [*namespace map*] precedence over implicit mappings.
 
 An aREF document MUST NOT contain more than one namespace map.
 
-See <http://prefix.cc> and [RDF::NS] for additional common namespace mappings.
-
-Other sources: 
-<http://stats.lod2.eu/vocabularies>,
-<http://prefix.cc/popular/all.txt>, 
-<http://www.w3.org/2011/rdfa-context/rdfa-1.1>, ...
+<div class="note">
+Common namespace mappings can be found at <http://prefix.cc> 
+(see [rdfns](https://metacpan.org/pod/rdfns) for an offline command line tool)
+at <http://stats.lod2.eu/vocabularies>, and as part of
+<http://www.w3.org/2011/rdfa-context/rdfa-1.1>.
+</div>
 
 # Types of aREF documents
 
-* flat (all objects encoded as [*strings*)]
-* non-circular
-* predicate map
-* subject map
-* clean (same RDF object always encoded the same way)
+*TODO: This part of the specification is not finished yet*
+
+* flat if no [*encoded objects*] are [*predicate maps*]
+  (all objects encoded as [*strings*])
+* circular vs non-circular
+* either a predicate map or a subject map or circular and both
+* normal (IRIs always encoded the same way)
+* normalized
 * ...
 
 # References
@@ -497,11 +538,11 @@ Other sources:
 [RDF/JSON]: http://www.w3.org/TR/rdf-json/
 
 
-`examples.md`{.include}
-
 # Appendix
 
 `aref-query.md`{.include}
+
+`examples.md`{.include}
 
 <!-- `appendix.md`{.include} -->
 
@@ -514,12 +555,16 @@ Other sources:
 [*IRI*]: #rdf-data
 [*predicate*]: #rdf-data
 [*object*]: #rdf-data
+[*objects*]: #rdf-data
+[*subject*]: #rdf-data
+[*subjects*]: #rdf-data
+[*triples*]: #rdf-data
 
+[*list*]: #list-map-structures
 [*map*]: #list-map-structures
 [*key*]: #list-map-structures
 [*keys*]: #list-map-structures
-[*subjects*]: #rdf-data
-[*triples*]: #rdf-data
+
 [*namespace map*]: #namespace-maps
 
 [*explicit IRI*]: #explicit-iris

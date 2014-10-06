@@ -26,6 +26,7 @@ filter = "." | "@" [ languageTag ] | "^" [ qName ]
 ```
 
 <div class="example">
+
  aREF query expression     informal description
 ------------------------ --------------------------------------
 `foaf_knows.foaf_knows`   friends of friends
@@ -34,4 +35,5 @@ filter = "." | "@" [ languageTag ] | "^" [ qName ]
 `dct_creator.foaf_name`   author names
 `dct_date^xsd_gYear`      date values of datatype `xsd_gYear`
 `skos_prefLabel@en`       preferred labels in English
+
 </div>
