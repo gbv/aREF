@@ -44,11 +44,6 @@ Unicode noncharacters or the set of Unicode characters not expressible in XML.
 
 ## RDF data
 
-[*RDF graphs*]: #rdf-data
-[*IRI*]: #rdf-data
-[*predicate*]: #rdf-data
-[*object*]: #rdf-data
-
 RDF is a graph-based data structuring languages defined as abstract syntax by
 Klyne and Carroll ([2004](http://www.w3.org/TR/rdf-concepts/)). Several RDF
 variants exist (in particular see [Wood, 2013](http://www.w3.org/TR/rdf11-new/)
@@ -504,6 +499,10 @@ Other sources:
 
 `examples.md`{.include}
 
+# Appendix
+
+`aref-query.md`{.include}
+
 <!-- `appendix.md`{.include} -->
 
 [*RDF graph*]: #rdf-data
@@ -511,6 +510,10 @@ Other sources:
 [*language tag*]: #rdf-data
 [*datatype*]: #rdf-data
 [*blank node*]: #rdf-data
+[*RDF graphs*]: #rdf-data
+[*IRI*]: #rdf-data
+[*predicate*]: #rdf-data
+[*object*]: #rdf-data
 
 [*map*]: #list-map-structures
 [*key*]: #list-map-structures
