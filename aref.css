@@ -16,7 +16,10 @@ section > pre {
     margin-bottom: 0.5em;
     padding: 0.5em;
 }
-
+.example:before, .note:before {
+    display: block;
+    padding-bottom: 0.5em;
+}
 .example {
     border-left: 0.5em solid #E0CB52;
     background-color: #FCFAEE;
@@ -38,8 +41,6 @@ section > pre {
 .note:before {
     content: "NOTE";
     color: #2B2;
-    display: block;
-    padding-bottom: 0.5em;
 }
 
 

@@ -1,4 +1,4 @@
-## Example in different serialization languages
+## aREF serializations
 
 An aREF document can be expressed both in data structuring languages (JSON,
 YAML...) and in type systems of programming languages (Python, Ruby, Perl...).
@@ -11,6 +11,8 @@ The namespace map could also be abbreviated to just the simple string
 -->
 
 *TODO: add RDF/Turtle of this document*
+
+### YAML {.unnumbered}
 
 The most condensed readable serialization of aREF is probably possible in
 **YAML**:
@@ -34,6 +36,8 @@ foaf_knows:
     dct_description: a nice guy@en
 ```
 </div>
+
+### JSON {.unnumbered}
 
 The same in **JSON** requires more brackets and delimiters:
 
@@ -60,6 +64,8 @@ The same in **JSON** requires more brackets and delimiters:
 }
 ```
 </div>
+
+### JavaScript {.unnumbered}
 
 In **JavaScript** one can omit quotes around map keys by using underscores for
 prefixed names:
@@ -88,6 +94,8 @@ prefixed names:
 ```
 </div>
 
+### Perl {.unnumbered}
+
 Similar rules apply to aREF in **Perl**:
 
 <div class="example">
@@ -113,6 +121,8 @@ Similar rules apply to aREF in **Perl**:
 }
 ```
 </div>
+
+### PHP {.unnumbered}
 
 Although **PHP** does not fully differntiate arrays and maps, one can express
 both. A PHP array is a map unless all PHP array keys are numeric:
@@ -141,5 +151,7 @@ both. A PHP array is a map unless all PHP array keys are numeric:
 ```
 </div>
 
-*Please add your favorite data or programming language at
-<https://github.com/gbv/aREF/issues> to be included here!*
+<div class="note">
+Please add your favorite data or programming language at
+<https://github.com/gbv/aREF/issues> to be included here!
+</div>

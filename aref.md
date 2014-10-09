@@ -1,12 +1,11 @@
 # Introduction
 
 This document defines an encoding of [*RDF graphs*] called **another RDF
-encoding form (aREF)**. The encoding combines and simplfies best parts of
-existing RDF serializations [Turtle], [JSON-LD], and [RDF/JSON]. In contrast to
-these formats, RDF data in aREF is not serialized as a Unicode string but
-encoded as a [*list-map-structure*], as known from the type system of most
-programming languages and from data structuring languages such as JSON and
-YAML.
+encoding form (aREF)**. The encoding combines and simpilfies parts of existing
+RDF serializations [Turtle], [JSON-LD], and [RDF/JSON]. In contrast to these
+formats, RDF data in aREF is not serialized as a Unicode string but encoded as
+a [*list-map-structure*], as known from the type system of most programming
+languages and from data structuring languages such as [JSON] and [YAML].
 
 This specification of aREF is hosted in a public git repository at <{GITHUB}>,
 written in in [Pandoc’s
@@ -27,16 +26,21 @@ Terms written in "**bold**" refer to terms at the place of their definition in
 this document. Terms written in "*italics*" refer to terms defined elsewhere in
 this document. Uppercase keywords (MUST, MAY, RECOMMENDED, SHOULD...) are used
 as defined in [RFC 2119].  Syntax rules in this document are expressed in ABNF
-notation as specified by [RFC 5234]. The following rules are references later
-in this document:
+notation as specified by [RFC 5234].
+
+<div class="note">
+Examples and notes in this document are informative only. YAML syntax
+is used to express sample aREF documents, unless noted otherwise.
+</div>
+
+The following syntax rules are referenced later in this document:
+
+    string = *( %x0-%x10FFFF )
 
     LOWERCASE = %x61-%x7A ; a-z
 
 The term **string** in this document always refers to Unicode strings as
-defined by [Unicode]. A *string* can also be defined with the following syntax
-rule:
-
-    string = *( %x0-%x10FFFF )
+defined by [Unicode]. A *string* can also be defined with syntax rule `string`.
 
 Strings SHOULD always be normalized to Normal Form C ([NFC]). Applications MAY
 restrict *strings* by disallowing selected Unciode codepoints, such as the 66
@@ -73,9 +77,14 @@ An *RDF graph* encoded in aREF can also include [*blank node
 identifiers*](#blank-nodes) to refer to particular blank nodes within the scope
 of the same *RDF graph*.  
 
+<div class="example">
+Ask a Semantic Web or Linked Data evangelist for examples of RDF!
+</div>
+
 ## Lists-map-structures
 
 [*list-map-structure*]: #lists-map-structures
+[*list-map-structures*]: #lists-map-structures
 
 A **list-map-structure** is an abstract data structure build of
 
@@ -85,12 +94,17 @@ A **list-map-structure** is an abstract data structure build of
   and a mapping from these *keys* to *list-map-structures*.
 
 Every aREF document MUST be given as *map*. Applications MAY restrict aREF
-documents to non-circular *list-map-structures*. All non-circular
-*list-map-structures* can be serialized in JSON and YAML.
+documents to [*non-circular*] *list-map-structures*. All non-circular
+*list-map-structures* can be serialized in [JSON] and [YAML].
 
 Applications MAY support special null values, disjoint from [*strings*], as
 element in a [*list*] and/or mapped to in a [*map*]. These null values MUST be
 ignored on decoding aREF.
+
+<div class="example">
+See section [aREF document types](#aref-document-types) and 
+[appendix aRef serializations](#aref-serializations) for examples.
+</div>
 
 # Encoding
 
@@ -376,6 +390,7 @@ A **predicate map** is a [*map*] with the following constraints:
 ### Encoded objects
 
 [*encoded object*]: #encoded-objects
+[*encoded objects*]: #encoded-objects
 
 An **encoded object** encodes zero or more RDF [*objects*] with same
 [*subject*] and same [*predicate*]. An [*encoded object*] MUST BE one of, or a
@@ -438,17 +453,96 @@ at <http://stats.lod2.eu/vocabularies>, and as part of
 <http://www.w3.org/2011/rdfa-context/rdfa-1.1>.
 </div>
 
-# Types of aREF documents
+# aREF document types
 
-*TODO: This part of the specification is not finished yet*
+[*circular*]: #aref-document-types
+[*non-circular*]: #aref-document-types
 
-* flat if no [*encoded objects*] are [*predicate maps*]
-  (all objects encoded as [*strings*])
-* circular vs non-circular
-* either a predicate map or a subject map or circular and both
-* normal (IRIs always encoded the same way)
-* normalized
-* ...
+Depending on their structure, aREF documents can be classified as
+*circular* or *non-circular*, as *flat*, as *consistent*, and as
+*normalized*.
+
+An aREF document is **circular** iff there is at least one path from a
+[*subject map*] to itself by stepping to a next [*subject maps*] that
+is part of an [*encoded objects*] of the previous [*subject map*].
+
+<div class="example">
+A minimal circular aREF document can be created in JavaScript as following:
+
+```javascript
+var aref = { _id: "http://example.org/alice" };
+aref.foaf_knows = alice; # alice knows herself
+```
+
+Circular aREF documents cannot be serialized in JSON but in YAML, for 
+instance this *normalized circular* aREF document:
+
+```yaml
+http://example.org/alice: &alice
+    _id: http://example.org/alice
+    foaf_knows: &bob    # alice knows bob
+http://example.org/bob: &bob
+    _id: http://example.org/bob
+    foaf_knows: &alice  # bob knows alice
+```
+</div>
+
+An aREF document is **flat** iff all of its [*encoded objects*] are
+encoded as [*strings*]. All *flat* aREF documents are *non-circular*.
+
+<div class="note">
+The [*list-map-structure*] of a flat aREF document can at most be nested in two
+levels, if it is a [*subject map*] and at most one level, if it is a
+[*predicate map*]:
+
+```yaml
+{
+  "http://example.org/": {    # first level: predicate map
+    "dct_title": [            # second level: list of encoded objects
+      "example@en",
+      "Beispiel@de"
+    ]
+  }
+}
+```
+</div>
+
+An aREF document (or its IRIs) is/are **consistent** iff ... 
+same IRI should be encoded the same way (but subtle differences is used 
+as subject, predicate, and object)*
+
+<div class="example">
+...
+</div>
+
+An aREF document is **normalized** according to a given [*namespace map*] if
+
+1. The document must be a [*subject map*]
+
+2. The document contains no null values or ignored keys
+
+3. Its IRIs are encoded consistently
+
+4. All lists have at least two members
+
+4. *what about `_ns`*?
+
+5. The document is 
+
+    - either *flat* and no predicate map contains the key `_id`
+      ("*normalized form 1*)
+
+    - or *normalized form 2*:
+
+        - all predicate maps must contain the key `_id` and
+          at least one more predicate key
+
+        - all predicate maps must directly be mapped from
+          a keys in the subject map.
+
+<div class="note">
+...better names for the two forms...
+</div>
 
 # References
 
@@ -525,14 +619,19 @@ at <http://stats.lod2.eu/vocabularies>, and as part of
 -   Jakob Voß: *RDF-aREF*. CPAN Perl Module.
     <https://metacpan.org/release/RDF-aREF>
 
--   JSON ...
+-   Douglas Crockford: *The application/json Media Type for JavaScript Object
+    Notation (JSON)*. RFC 4627, July 2006. <https://tools.ietf.org/html/rfc4627>
 
--   YAML ...
+-   Oren Ben-Kiki, Clark Evens, Ingy döt Net: *YAML Ain’t Markup Language
+    (YAML™) Version 1.2*. 1 October 2010.
+    <http://yaml.org/spec/1.2/spec.html>
 
 [RFC 2119]: http://tools.ietf.org/html/rfc2119
 [RFC 4151]: http://tools.ietf.org/html/rfc4151
 [RFC 5870]: http://tools.ietf.org/html/rfc5870
 
+[JSON]: http://json.org/
+[YAML]: http://yaml.org/
 [Turtle]: http://www.w3.org/TR/turtle/
 [JSON-LD]: http://json-ld.org/
 [RDF/JSON]: http://www.w3.org/TR/rdf-json/
@@ -542,7 +641,7 @@ at <http://stats.lod2.eu/vocabularies>, and as part of
 
 `aref-query.md`{.include}
 
-`examples.md`{.include}
+`serializations.md`{.include}
 
 <!-- `appendix.md`{.include} -->
 
@@ -577,6 +676,7 @@ at <http://stats.lod2.eu/vocabularies>, and as part of
 [*blank node identifier*]: #blank-nodes
 
 [*subject map*]: #subject-maps
+[*subject maps*]: #subject-maps
 [*predicate map*]: #predicate-maps
 
 
