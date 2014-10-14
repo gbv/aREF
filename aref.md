@@ -334,10 +334,10 @@ A **subject map** is a [*map*] with the following constraints:
 2.  The [*subject map*] MAY contain the key [*key*] "`_ns`", mapped to
     a [*namespace map*].
 
-3.  Additional keys, starting with `_` SHOULD be ignored.
+3.  Additional keys, starting with `_` and not with `_:` SHOULD be ignored.
 
-4.  Every [*key*], unless it starts with "`_`", is either a [*plain IRI*] or a
-    [*qName*] or a [*blank node*]. These [*keys*] encode the [*subjects*] of 
+4.  Every other [*key*] is either a [*plain IRI*] or a [*qName*] or 
+    a [*blank node*]. These [*keys*] encode the [*subjects*] of 
     RDF [*triples*].
 
 5.  Every value of a [*key*] that encodes a [*subject*] MUST BE a 
