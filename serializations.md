@@ -3,14 +3,32 @@
 An aREF document can be expressed both in data structuring languages (JSON,
 YAML...) and in type systems of programming languages (Python, Ruby, Perl...).
 
-The following examples express the same aREF document in different languages.
+The following examples express the same aREF document in different languages. The
+RDF graph encoded in aREF can be expressed in Turtle syntax as following:
 
-<!--
-The namespace map could also be abbreviated to just the simple string
-`"http://example.org/ontology/"` for the default namespace.
--->
+<div class="example">
+```turtle
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
 
-*TODO: add RDF/Turtle of this document*
+<http://example.com/people#alice> a foaf:Person ;
+    foaf:name "Alice Smith" ;
+    foaf:age 42 ;
+    foaf:homepage 
+        <http://personal.example.org/~alice/>, 
+        <http://work.example.com/asmith/> ;
+    foaf:knows [
+        foaf:name "John" ;
+        dct:description "a nice guy"@en 
+    ]
+.
+```
+</div>
+
+<div class="note">
+Please add your favorite data or programming language at
+<https://github.com/gbv/aREF/issues> to be included here!
+</div>
 
 ### YAML {.unnumbered}
 
@@ -151,7 +169,3 @@ both. A PHP array is a map unless all PHP array keys are numeric:
 ```
 </div>
 
-<div class="note">
-Please add your favorite data or programming language at
-<https://github.com/gbv/aREF/issues> to be included here!
-</div>

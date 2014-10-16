@@ -1,12 +1,14 @@
 ## aREF query
 
+[*aREF query*]: #aref-query
+
 *This section is non-normative*
 
 **aREF query** is a query language to query [*string*], [*IRIs*], and/or
 [*blank nodes*] from a given [*IRI*] or a [*blank node*] in an RDF graph. The
 query language can be used as path language for RDF, similar to XPath for XML.
 
-An [*aRef query*] consists a list of [*qNames*], separated by dot ("`.`") and
+An [*aREF query*] consists a list of [*qNames*], separated by dot ("`.`") and
 optionally followed by:
 
 * either a dot to only query [*IRIs*] and [*blank nodes*],

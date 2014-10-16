@@ -103,7 +103,7 @@ ignored on decoding aREF.
 
 <div class="example">
 See section [aREF document types](#aref-document-types) and 
-[appendix aRef serializations](#aref-serializations) for examples.
+[appendix aREF serializations](#aref-serializations) for examples.
 </div>
 
 # Encoding
@@ -256,7 +256,7 @@ ends with an at sign.
 
 <div class="example">
 
- aRef string           RDF literal (Turtle syntax)
+ aREF string           RDF literal (Turtle syntax)
  --------------------- ----------------------------------
  `@`                   `""`
  `*empty string*`      `""`
@@ -420,40 +420,103 @@ The following encoded objects, expressed in JSON, refer to the same [*IRI*]:
 
 ## Namespace maps
 
-<!-- TODO: this section may be improved -->
+A *namespace map* can be specified explicitly with the special key "`_ns`" in a
+[*subject map*] or in a [*predicate map*].  An aREF document MUST NOT contain
+more than one explicit *namespace map*.
 
-A **namespace map** in aREF is either a [*string*] that refers to a namespace
-mapping defines elsewhere, or a *map* where every *key* conforms to the
-`prefix` syntax rule (see [*qName*]) and is mapped to an IRI, given as
-[*string*] that conforms to the `IRI` syntax rule from [RFC 3987]. The IRI is
-called **namespace URI**. A *namespace map* can be specified both, explicitly
-with the special key "`_ns`" in a [*subject map*] or in a [*predicate map*],
-and implicitly by assuming a predefined namespace map:
+A **namespace map** is 
 
-The following [*namespace map*] MUST be assumed implicitly, unless explicitly
-set to other namespace URIs in a namespace map:
+* either a *map* in which every *key* conforms to the `prefix` syntax rule (see
+  [*qName*]) and is mapped to an [*IRI*] (syntax rule `IRI` from [RFC 3987]).
+  The *IRIs* in a *namespac map* are also called **namespace URIs**. The special
+  key underscore (`_`) can further be used to refer to another predefined 
+  namespace map given by a *string*. This *string* is also called **namespace
+  map identifier**. Mappings explicitly given with *namespace URI*
+  precedence over mappings refered to by a *namespace map identifier*.
 
-prefix  namespace URI
-------- --------------------------------------------
-rdf     http://www.w3.org/1999/02/22-rdf-syntax-ns#
-rdfs    http://www.w3.org/2000/01/rdf-schema#
-owl     http://www.w3.org/2002/07/owl#
-xsd     http://www.w3.org/2001/XMLSchema#
-------- --------------------------------------------
+* or a *namespace map identifier* that refers to a predefined namespace map.
 
-Applications MAY predefine additional implicit namespace maps. Mappings in an
-explicit [*namespace map*] precedence over implicit mappings.
+Applications MAY further assume an implicit *namespace map*. Mappings from an
+implicit *namespace map* can be overriden by explicit *namespace maps*.  The
+following implicit *namespace map* or a superset of it SHOULD be assumed by
+default:
 
-An aREF document MUST NOT contain more than one namespace map.
+```json
+{
+  "rdf":  "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+  "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+  "owl":  "http://www.w3.org/2002/07/owl#",
+  "xsd":  "http://www.w3.org/2001/XMLSchema#"
+}
+```
+
+**TODO:** *should the default namespace map always precede namespace maps
+given by namespace map identifier, so applications can always assume they
+are right?*
+
+<div class="example">
+The following namespace maps are equivalent:
+
+* `"example"`
+* `{ "_": "example" }`
+
+A commonly used *namespace map* is listed at 
+<http://www.w3.org/2011/rdfa-context/rdfa-1.1>. If the the *namespace
+map identifier* <http://www.w3.org/2013/json-ld-context/rdfa11> refers
+to this map, it can be used in aREF as following (examples in YAML):
+
+```
+_ns: http://www.w3.org/2013/json-ld-context/rdfa11
+```
+
+Custom prefixes can be added and existing prefixes redefined like this:
+
+```
+_ns: 
+  _: http://www.w3.org/2013/json-ld-context/rdfa11
+  dc: http://purl.org/dc/elements/1.1/ # instead of http://purl.org/dc/terms/
+  dct: http://purl.org/dc/terms/       # additional prefix
+```
+</div>
 
 <div class="note">
-Common namespace mappings can be found at <http://prefix.cc> 
-(see [rdfns](https://metacpan.org/pod/rdfns) for an offline command line tool)
-at <http://stats.lod2.eu/vocabularies>, and as part of
-<http://www.w3.org/2011/rdfa-context/rdfa-1.1>.
+This specification does *not* include rules how to resolve *namespace maps
+identifiers*. The following guidelines are non normative:
+
+* An URL is expected to refer to a JSON-LD document with a 
+  [\@context element](http://www.w3.org/TR/json-ld/#the-context). 
+  For instance the default aREF *namespace map* could be expressed like this:
+
+    ```json
+    {
+      "@context": {
+        "rdf":  "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "owl":  "http://www.w3.org/2002/07/owl#",
+        "xsd":  "http://www.w3.org/2001/XMLSchema#"
+      }
+    }
+    ```
+
+    Note that JSON-LD context documents for particular ontologies usually
+    define abbreviations for full URIs and/or default vocabularies (`@vocab`) 
+    that cannot be used in aREF documents because a [*qNames*] MUST consists 
+    of prefix *and* local name.
+
+* A string of the form `YYYYMMDD` is expected to refer to the *namespace 
+  map* defined at this date at <http://prefix.cc> (see [rdfns](https://metacpan.org/pod/rdfns),
+  available as package 
+  [librdf-ns-perl](https://packages.debian.org/search?searchon=names&keywords=librdf-ns-perl) 
+  in Debian for a related command line tool).
+  For instance the identifier "20140901" maps prefix "fabio" to
+  <http://purl.org/spar/fabio/> and the identifier "20120521" maps it to
+  <http://purl.org/spar/fabio#>.
+
 </div>
 
 # aREF document types
+
+*THIS PART OF THE SPEC IS NOT FINISHED YET*
 
 [*circular*]: #aref-document-types
 [*non-circular*]: #aref-document-types
@@ -619,6 +682,10 @@ An aREF document is **normalized** according to a given [*namespace map*] if
 -   Jakob Voß: *RDF-aREF*. CPAN Perl Module.
     <https://metacpan.org/release/RDF-aREF>
 
+-   Jakob Voß: *RDF-NS*. CPAN Perl Module.
+    <https://metacpan.org/release/RDF-NS>
+
+
 -   Douglas Crockford: *The application/json Media Type for JavaScript Object
     Notation (JSON)*. RFC 4627, July 2006. <https://tools.ietf.org/html/rfc4627>
 
@@ -650,8 +717,10 @@ An aREF document is **normalized** according to a given [*namespace map*] if
 [*language tag*]: #rdf-data
 [*datatype*]: #rdf-data
 [*blank node*]: #rdf-data
+[*blank nodes*]: #rdf-data
 [*RDF graphs*]: #rdf-data
 [*IRI*]: #rdf-data
+[*IRIs*]: #rdf-data
 [*predicate*]: #rdf-data
 [*object*]: #rdf-data
 [*objects*]: #rdf-data
@@ -678,7 +747,6 @@ An aREF document is **normalized** according to a given [*namespace map*] if
 [*subject map*]: #subject-maps
 [*subject maps*]: #subject-maps
 [*predicate map*]: #predicate-maps
-
 
 [*namespace URI*]: #namespace-maps
 
