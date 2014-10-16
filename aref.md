@@ -726,6 +726,7 @@ An aREF document is **normalized** according to a given [*namespace map*] if
 [*objects*]: #rdf-data
 [*subject*]: #rdf-data
 [*subjects*]: #rdf-data
+[*predicates*]: #rdf-data
 [*triples*]: #rdf-data
 
 [*list*]: #list-map-structures
