@@ -525,7 +525,7 @@ Depending on their structure, aREF documents can be classified as
 *circular* or *non-circular*, as *flat*, as *consistent*, and as
 *normalized*.
 
-An aREF document is **circular** iff there is at least one path from a
+An aREF document is **circular** if there is at least one path from a
 [*subject map*] to itself by stepping to a next [*subject maps*] that
 is part of an [*encoded objects*] of the previous [*subject map*].
 
