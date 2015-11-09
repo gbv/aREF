@@ -550,7 +550,7 @@ http://example.org/bob: &bob
 ```
 </div>
 
-An aREF document is **flat** iff all of its [*encoded objects*] are
+An aREF document is **flat** if all of its [*encoded objects*] are
 encoded as [*strings*]. All *flat* aREF documents are *non-circular*.
 
 <div class="note">
