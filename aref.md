@@ -534,7 +534,7 @@ A minimal circular aREF document can be created in JavaScript as following:
 
 ```javascript
 var aref = { _id: "http://example.org/alice" };
-aref.foaf_knows = alice; # alice knows herself
+aref.foaf_knows = aref; # alice knows herself
 ```
 
 Circular aREF documents cannot be serialized in JSON but in YAML, for 
