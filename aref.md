@@ -525,7 +525,7 @@ Depending on their structure, aREF documents can be classified as
 *circular* or *non-circular*, as *flat*, as *consistent*, and as
 *normalized*.
 
-An aREF document is **circular** iff there is at least one path from a
+An aREF document is **circular** if there is at least one path from a
 [*subject map*] to itself by stepping to a next [*subject maps*] that
 is part of an [*encoded objects*] of the previous [*subject map*].
 
@@ -534,7 +534,7 @@ A minimal circular aREF document can be created in JavaScript as following:
 
 ```javascript
 var aref = { _id: "http://example.org/alice" };
-aref.foaf_knows = alice; # alice knows herself
+aref.foaf_knows = aref; # alice knows herself
 ```
 
 Circular aREF documents cannot be serialized in JSON but in YAML, for 
@@ -542,15 +542,13 @@ instance this *normalized circular* aREF document:
 
 ```yaml
 http://example.org/alice: &alice
-    _id: http://example.org/alice
-    foaf_knows: &bob    # alice knows bob
-http://example.org/bob: &bob
-    _id: http://example.org/bob
-    foaf_knows: &alice  # bob knows alice
+    foaf_knows: &bob         # alice knows bob
+        foaf_knows: *alice   # bob knows alice
+http://example.org/bob: *bob
 ```
 </div>
 
-An aREF document is **flat** iff all of its [*encoded objects*] are
+An aREF document is **flat** if all of its [*encoded objects*] are
 encoded as [*strings*]. All *flat* aREF documents are *non-circular*.
 
 <div class="note">
