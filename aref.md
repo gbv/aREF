@@ -542,11 +542,9 @@ instance this *normalized circular* aREF document:
 
 ```yaml
 http://example.org/alice: &alice
-    _id: http://example.org/alice
-    foaf_knows: &bob    # alice knows bob
-http://example.org/bob: &bob
-    _id: http://example.org/bob
-    foaf_knows: &alice  # bob knows alice
+    foaf_knows: &bob         # alice knows bob
+        foaf_knows: *alice   # bob knows alice
+http://example.org/bob: *bob
 ```
 </div>
 
