@@ -96,7 +96,7 @@ prefixed names:
         foaf: 'http://xmlns.com/foaf/0.1/'
     },
     _id: 'http://example.com/people#alice',
-    a: 'foaf:Person',
+    a: 'foaf_Person',
     foaf_name: 'Alice Smisth',
     foaf_age: '42^xsd_integer',
     foaf_homepage: [
@@ -124,7 +124,7 @@ Similar rules apply to aREF in **Perl**:
        foaf => 'http://xmlns.com/foaf/0.1/',
     },
     _id => 'http://example.com/people#alice',
-    a   => 'foaf:Person',
+    a   => 'foaf_Person',
     foaf_name => 'Alice Smith',
     foaf_age  => '42^xsd_integer', 
     foaf_homepage => [
